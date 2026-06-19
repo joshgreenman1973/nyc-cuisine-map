@@ -146,6 +146,15 @@
   .stat .d{font-size:12.5px; color:var(--ink-soft)}
   .stat .glyph{position:absolute; right:-6px; bottom:-14px; font-size:60px; opacity:.10}
 
+  .catfilter{display:flex; align-items:center; gap:12px; margin:2px 0 20px; flex-wrap:wrap}
+  .catfilter .cl{font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft);
+    font-weight:700}
+  .seg2{display:inline-flex; border:1.5px solid var(--line); border-radius:9px; overflow:hidden;
+    background:#fff}
+  .seg2 button{border:none; background:transparent; padding:8px 15px; font-size:13px; font-weight:600;
+    cursor:pointer; font-family:inherit; color:var(--ink-soft); transition:background .15s,color .15s}
+  .seg2 button.on{background:var(--ink); color:var(--paper-2)}
+  .seg2 button+button{border-left:1.5px solid var(--line)}
   .charts2{display:grid; grid-template-columns:1.15fr 1fr; gap:20px; align-items:start}
   .chart{padding:20px 20px 22px}
   .chart h3{margin:0 0 3px; font-size:19px; font-weight:600}
@@ -269,11 +278,21 @@
 
   <div class="statgrid" id="statgrid"></div>
 
+  <div class="catfilter rv" id="catfilter">
+    <span class="cl">Group the charts by</span>
+    <div class="seg2">
+      <button data-cat="all" class="on">All cuisines</button>
+      <button data-cat="origin">Place of origin</button>
+      <button data-cat="type">Food type &amp; style</button>
+    </div>
+  </div>
+
   <div class="charts2">
     <div class="chart card rv">
-      <h3>The city's most common cuisines</h3>
+      <h3 id="topCuisinesTtl">The city's most common cuisines</h3>
       <p class="note">Unique establishments citywide. Click any bar to map it. Color marks whether the
-        label names a place of origin or a food type / style.</p>
+        label names a place of origin or a food type / style. Each restaurant has exactly one label,
+        so categories never overlap.</p>
       <div class="barchart" id="topCuisines"></div>
       <div class="legendkey">
         <span><i style="background:linear-gradient(90deg,var(--accent-2),var(--accent))"></i>Place of origin</span>
@@ -282,9 +301,9 @@
     </div>
 
     <div class="chart card rv">
-      <h3>Each borough's flavor fingerprint</h3>
-      <p class="note">The six most common cuisines in each borough, as a share of all its restaurants.
-        Grey is everything else, plus the establishments left unlabeled.</p>
+      <h3 id="boroFPTtl">Each borough's flavor fingerprint</h3>
+      <p class="note" id="boroFPNote">The six most common cuisines in each borough, as a share of all its
+        restaurants. Grey is everything else, plus the establishments left unlabeled.</p>
       <div class="boroFP" id="boroFP"></div>
     </div>
   </div>
@@ -311,6 +330,13 @@
     permitted, its owner or manager picks one label from a fixed list of roughly 90 choices the city
     maintains. There is no published definition of what separates one category from another, and no
     review of whether the pick is &ldquo;right.&rdquo;</p>
+  <p><strong>One label each &mdash; and only one.</strong> We checked: none of the 31,217 establishments
+    carry more than one cuisine label. So the categories never overlap and the percentages never
+    double-count. But it also means the single list is forced to mix two different ideas &mdash; a
+    country of origin (Chinese, Italian) and a kind of food (Coffee/Tea, Pizza, American) &mdash; and a
+    place can only be one. An American-style coffee shop is filed as &ldquo;Coffee/Tea,&rdquo; never also
+    as &ldquo;American,&rdquo; so &ldquo;American&rdquo; undercounts American-style food. Use the
+    <em>place of origin / food type</em> filter on the charts to look at one dimension at a time.</p>
   <h3>Why that matters here</h3>
   <ul>
     <li><strong>The categories are uneven by design.</strong> Some name a country (Chinese, Mexican),
@@ -527,9 +553,21 @@ function buildStatCards(){
     `<div class="v" style="font-size:${String(c.v).length>11?'24px':'38px'}">${c.v}</div>`+
     `<div class="d">${c.d}</div><div class="glyph">${c.g}</div></div>`).join("");
 }
+let catFilter="all";
+function catPass(c){
+  if(!c.raw || c.name==="(blank / unlabeled)") return false;
+  if(catFilter==="origin") return c.origin;
+  if(catFilter==="type") return !c.origin;
+  return true;
+}
+const CAT_LABEL={all:"cuisines",origin:"place-of-origin cuisines",type:"food-type labels"};
+
 function buildTopCuisines(){
-  const cu=DATA.cuisines.filter(c=>c.raw&&c.name!=="(blank / unlabeled)").sort((a,b)=>b.total-a.total).slice(0,16);
+  const cu=DATA.cuisines.filter(catPass).sort((a,b)=>b.total-a.total).slice(0,16);
   const max=cu[0].total;
+  $("#topCuisinesTtl").textContent = catFilter==="all"
+    ? "The city's most common cuisines"
+    : "The city's most common "+CAT_LABEL[catFilter];
   $("#topCuisines").innerHTML=cu.map(c=>{
     const raw=c.raw||c.name;
     return `<div class="bcrow" data-raw="${raw.replace(/"/g,'&quot;')}">`+
@@ -548,13 +586,21 @@ function syncTopHighlight(){
     r.classList.toggle("sel", r.dataset.raw===selected));
 }
 function buildBoroFP(){
+  const note={
+    all:"The six most common cuisines in each borough, as a share of all its restaurants. Grey is everything else, plus the establishments left unlabeled.",
+    origin:"Each borough's six largest place-of-origin cuisines, as a share of all its restaurants. Grey is food-type labels (pizza, coffee, American…) and the unlabeled.",
+    type:"Each borough's six largest food-type labels, as a share of all its restaurants. Grey is place-of-origin cuisines and the unlabeled."
+  };
+  $("#boroFPTtl").textContent = catFilter==="all" ? "Each borough's flavor fingerprint"
+    : catFilter==="origin" ? "Each borough's top cuisines by origin" : "Each borough's top food types";
+  $("#boroFPNote").textContent = note[catFilter];
   $("#boroFP").innerHTML=BORO_ORDER.map(boro=>{
     const tot=DATA.boro_totals[boro]||0;
-    // the borough's most common cuisines; exclude only blank/unlabeled (a non-answer,
-    // not a cuisine) -- American and every real category are kept.
+    // the borough's most common cuisines under the current filter; share is always
+    // of ALL the borough's restaurants, so the grey remainder is honest.
     const counts=[];
     for(const raw in DATA.boro_by_cuisine){
-      if(raw==="") continue;
+      if(!catPass(cuObj(raw))) continue;
       const n=DATA.boro_by_cuisine[raw][boro]; if(n) counts.push({raw,n,name:cuObj(raw).name});
     }
     counts.sort((a,b)=>b.n-a.n);
@@ -568,6 +614,11 @@ function buildBoroFP(){
       `<div class="tags">${tags}</div></div>`;
   }).join("");
 }
+
+document.querySelectorAll("#catfilter button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("#catfilter button").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); catFilter=b.dataset.cat; buildTopCuisines(); buildBoroFP();
+}));
 
 /* modals */
 $("#aiBtn").onclick=()=>$("#aiModal").classList.add("show");

@@ -6,7 +6,7 @@
 <title>New York on a plate &mdash; the city's restaurants, by cuisine and neighborhood</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Hanken+Grotesk:wght@400;500;600;700;800&family=Spline+Sans+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
   :root{
@@ -38,14 +38,21 @@
   a{color:var(--accent)}
 
   /* ---------- masthead ---------- */
-  .mast{max-width:1320px; margin:0 auto; padding:30px 28px 8px}
-  .kicker{display:flex; align-items:center; gap:10px; font-size:12px; font-weight:700;
-    letter-spacing:.22em; text-transform:uppercase; color:var(--accent)}
-  .kicker::before{content:""; width:30px; height:2px; background:var(--accent)}
-  .mast h1{margin:.18em 0 .12em; font-size:clamp(30px,4.6vw,58px); line-height:1.02;
-    font-weight:900; letter-spacing:-.02em; max-width:16ch}
-  .mast h1 em{font-style:italic; font-weight:500; color:var(--wine)}
-  .mast p.lede{margin:0; max-width:62ch; font-size:clamp(15px,1.6vw,18px);
+  .mast{max-width:1320px; margin:0 auto; padding:26px 28px 8px}
+  .folio{display:flex; justify-content:space-between; align-items:flex-end; gap:16px;
+    font-family:"Spline Sans Mono",ui-monospace,monospace; font-size:11.5px; letter-spacing:.01em;
+    text-transform:uppercase; color:var(--ink-soft); padding-bottom:11px;
+    border-bottom:1.5px solid rgba(36,26,18,.28)}
+  .folio .r{color:var(--accent); font-weight:600; text-align:right}
+  .mast h1{font-family:"Big Shoulders Display",sans-serif; font-weight:800; text-transform:lowercase;
+    line-height:.84; letter-spacing:-.004em; font-size:clamp(52px,10.5vw,128px);
+    margin:.14em 0 .12em; color:var(--ink)}
+  .mast h1 .hl{color:var(--accent); font-style:normal}
+  .mast h1 .hl2{color:var(--wine)}
+  .mast .deck{font-family:"Hanken Grotesk",sans-serif; font-size:clamp(17px,2.1vw,23px);
+    font-weight:700; line-height:1.18; color:var(--ink); margin:0 0 9px; max-width:30ch;
+    letter-spacing:-.01em}
+  .mast p.lede{margin:0; max-width:60ch; font-size:clamp(14.5px,1.5vw,17px);
     color:var(--ink-soft); line-height:1.5}
   .mast .stripstats{display:flex; flex-wrap:wrap; gap:26px; margin-top:18px;
     padding-top:16px; border-top:1.5px solid rgba(36,26,18,.18)}
@@ -227,11 +234,16 @@
 <body>
 
 <div class="mast">
-  <div class="kicker rv">A New York City data atlas</div>
-  <h1 class="rv d1">New York <em>on a plate</em></h1>
-  <p class="lede rv d1">Every one of the city's roughly 31,000 inspected eateries carries a single cuisine tag.
-    Map them by neighborhood, see which flavors define each borough, and judge for yourself where the
-    line between a &ldquo;cuisine&rdquo; and a &ldquo;food type&rdquo; really falls.</p>
+  <div class="folio rv">
+    <span>DOHMH restaurant inspections &nbsp;/&nbsp; New York City open data</span>
+    <span class="r">A data atlas</span>
+  </div>
+  <h1 class="rv d1">who cooks <span class="hl">what</span>,<br>and <span class="hl2">where</span></h1>
+  <p class="deck rv d1">Every inspected restaurant in New York City, sorted by its cuisine and mapped
+    across 195 neighborhoods.</p>
+  <p class="lede rv d2">See which flavors define each borough, find where a single cuisine takes over a
+    block, and judge for yourself where the line between a &ldquo;cuisine&rdquo; and a &ldquo;food type&rdquo;
+    really falls.</p>
   <div class="stripstats rv d2" id="stripstats"></div>
 </div>
 

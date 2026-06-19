@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>New York on a plate &mdash; the city's restaurants, by cuisine and neighborhood</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=Hanken+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+  :root{
+    --paper:#f3e9d9;        /* warm cream */
+    --paper-2:#faf4e9;      /* lighter card */
+    --ink:#241a12;          /* espresso */
+    --ink-soft:#6b594a;     /* muted brown */
+    --line:#241a12;
+    --accent:#c0402b;       /* tomato */
+    --accent-2:#e08a1e;     /* saffron */
+    --wine:#6e1226;
+    --gold:#caa24a;
+    /* heat ramp */
+    --r0:#ece0cb; --r1:#f6d287; --r2:#eea945; --r3:#e2742f; --r4:#bf3b2c; --r5:#7d1d2d;
+    --shadow:0 14px 38px -18px rgba(40,22,10,.55);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Hanken Grotesk",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    background-image:
+      radial-gradient(circle at 12% -8%, rgba(224,138,30,.10), transparent 42%),
+      radial-gradient(circle at 92% 4%, rgba(192,64,43,.10), transparent 38%);
+  }
+  h1,h2,h3,.serif{font-family:"Fraunces",Georgia,serif}
+  .num{font-family:"Fraunces",Georgia,serif; font-variant-numeric:tabular-nums; font-weight:600}
+  a{color:var(--accent)}
+
+  /* ---------- masthead ---------- */
+  .mast{max-width:1320px; margin:0 auto; padding:30px 28px 8px}
+  .kicker{display:flex; align-items:center; gap:10px; font-size:12px; font-weight:700;
+    letter-spacing:.22em; text-transform:uppercase; color:var(--accent)}
+  .kicker::before{content:""; width:30px; height:2px; background:var(--accent)}
+  .mast h1{margin:.18em 0 .12em; font-size:clamp(30px,4.6vw,58px); line-height:1.02;
+    font-weight:900; letter-spacing:-.02em; max-width:16ch}
+  .mast h1 em{font-style:italic; font-weight:500; color:var(--wine)}
+  .mast p.lede{margin:0; max-width:62ch; font-size:clamp(15px,1.6vw,18px);
+    color:var(--ink-soft); line-height:1.5}
+  .mast .stripstats{display:flex; flex-wrap:wrap; gap:26px; margin-top:18px;
+    padding-top:16px; border-top:1.5px solid rgba(36,26,18,.18)}
+  .stripstats .s{display:flex; flex-direction:column}
+  .stripstats .s b{font-family:"Fraunces",serif; font-size:30px; font-weight:900; line-height:1}
+  .stripstats .s span{font-size:12.5px; color:var(--ink-soft); margin-top:3px;
+    text-transform:uppercase; letter-spacing:.04em}
+
+  /* ---------- explorer ---------- */
+  .explorer{max-width:1320px; margin:22px auto 0; padding:0 28px;
+    display:grid; grid-template-columns:332px 1fr; gap:20px}
+  .card{background:var(--paper-2); border:1.5px solid var(--line); border-radius:14px;
+    box-shadow:var(--shadow)}
+  aside.panel{align-self:start; overflow:hidden; display:flex; flex-direction:column;
+    max-height:78vh}
+  .panel .pad{padding:16px 17px}
+  label.fld{display:block; font-size:11px; text-transform:uppercase; letter-spacing:.08em;
+    color:var(--ink-soft); font-weight:700; margin:0 0 6px}
+  .selwrap{position:relative}
+  select#cuisine{width:100%; appearance:none; padding:11px 34px 11px 13px; font-size:15px;
+    font-weight:600; font-family:inherit; color:var(--ink); background:#fff;
+    border:1.5px solid var(--line); border-radius:9px; cursor:pointer}
+  .selwrap::after{content:"\25BC"; position:absolute; right:13px; top:50%;
+    transform:translateY(-50%); font-size:10px; color:var(--accent); pointer-events:none}
+  .seg{display:flex; margin-top:11px; border:1.5px solid var(--line); border-radius:9px;
+    overflow:hidden; background:#fff}
+  .seg button{flex:1; border:none; background:transparent; padding:9px 6px; font-size:12.5px;
+    font-weight:600; cursor:pointer; font-family:inherit; color:var(--ink-soft);
+    transition:background .15s,color .15s}
+  .seg button.on{background:var(--ink); color:var(--paper-2)}
+  .seg button+button{border-left:1.5px solid var(--line)}
+  .deflink{display:block; width:100%; margin-top:10px; background:none; border:none;
+    padding:2px 0; text-align:left; cursor:pointer; font-family:inherit; font-size:12.5px;
+    font-weight:600; color:var(--accent); text-decoration:underline; text-underline-offset:2px;
+    text-decoration-color:rgba(192,64,43,.4)}
+  .deflink:hover{text-decoration-color:var(--accent)}
+
+  .selsum{border-top:1.5px solid rgba(36,26,18,.14); padding:15px 17px 13px}
+  .selsum .big{font-family:"Fraunces",serif; font-size:46px; font-weight:900; line-height:.9}
+  .selsum .big .pct{font-size:30px}
+  .selsum .lab{font-size:13px; color:var(--ink-soft); margin-top:5px}
+  .selsum .lab b{color:var(--ink)}
+  .boros{margin-top:13px; display:flex; flex-direction:column; gap:6px}
+  .boros .row{display:grid; grid-template-columns:80px 1fr 34px; align-items:center; gap:8px;
+    font-size:12.5px}
+  .boros .bn{color:var(--ink-soft)}
+  .boros .track{height:11px; background:rgba(36,26,18,.08); border-radius:6px; overflow:hidden}
+  .boros .fill{height:100%; background:linear-gradient(90deg,var(--accent-2),var(--accent));
+    border-radius:6px; transition:width .5s cubic-bezier(.2,.8,.2,1)}
+  .boros .bv{text-align:right; font-weight:700; font-variant-numeric:tabular-nums}
+
+  .ranks{border-top:1.5px solid rgba(36,26,18,.14); overflow:auto; padding:11px 17px 16px}
+  .ranks h3{font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-soft);
+    margin:2px 0 8px; font-weight:700; font-family:"Hanken Grotesk",sans-serif}
+  .ranks ol{margin:0; padding:0; list-style:none; counter-reset:r}
+  .ranks li{counter-increment:r; display:grid; grid-template-columns:20px 1fr auto;
+    align-items:baseline; gap:9px; padding:7px 0; border-bottom:1px solid rgba(36,26,18,.09);
+    font-size:13.5px; cursor:pointer; transition:padding-left .15s}
+  .ranks li:hover{padding-left:5px; color:var(--accent)}
+  .ranks li::before{content:counter(r); color:var(--gold); font-family:"Fraunces",serif;
+    font-weight:600; font-size:13px}
+  .ranks li .bo{color:var(--ink-soft); font-size:11px}
+  .ranks li .ct{font-family:"Fraunces",serif; font-weight:600; font-variant-numeric:tabular-nums}
+
+  /* map */
+  .mapcard{position:relative; overflow:hidden; min-height:78vh}
+  #map{position:absolute; inset:0; background:#e8dec9}
+  .leaflet-container{font-family:inherit; background:#e8dec9}
+  .maptag{position:absolute; top:14px; left:50%; transform:translateX(-50%); z-index:600;
+    background:rgba(250,244,233,.94); border:1.5px solid var(--line); border-radius:30px;
+    padding:7px 16px; font-size:13px; font-weight:600; box-shadow:var(--shadow);
+    backdrop-filter:blur(3px); white-space:nowrap}
+  .maptag b{color:var(--accent)}
+  .legend{position:absolute; bottom:16px; right:14px; z-index:600; background:rgba(250,244,233,.96);
+    border:1.5px solid var(--line); border-radius:11px; padding:11px 13px; font-size:11px;
+    box-shadow:var(--shadow)}
+  .legend .lt{font-weight:700; text-transform:uppercase; letter-spacing:.06em; font-size:10px;
+    margin-bottom:7px; color:var(--ink-soft)}
+  .legend .ramp{height:11px; border-radius:3px; width:150px;
+    background:linear-gradient(90deg,var(--r0),var(--r1),var(--r2),var(--r3),var(--r4),var(--r5))}
+  .legend .ends{display:flex; justify-content:space-between; margin-top:4px;
+    font-variant-numeric:tabular-nums; color:var(--ink-soft)}
+  .leaflet-tooltip.tip{background:var(--ink); color:var(--paper-2); border:none; border-radius:8px;
+    font-size:12.5px; padding:7px 10px; box-shadow:var(--shadow); line-height:1.35}
+  .leaflet-tooltip.tip strong{font-family:"Fraunces",serif; font-size:14px; color:#fff}
+  .leaflet-tooltip.tip .pc{color:var(--accent-2); font-weight:700}
+
+  /* ---------- dashboard ---------- */
+  .dash{max-width:1320px; margin:46px auto 0; padding:0 28px}
+  .dash .head{display:flex; align-items:baseline; gap:14px; margin-bottom:4px}
+  .dash .head h2{font-size:clamp(22px,2.6vw,32px); font-weight:900; margin:0; letter-spacing:-.01em}
+  .dash .head .ln{flex:1; height:2px; background:rgba(36,26,18,.2)}
+  .dash > p.sub{margin:.2em 0 22px; color:var(--ink-soft); max-width:64ch; font-size:15px}
+
+  .statgrid{display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:26px}
+  .stat{padding:18px 18px 16px; position:relative; overflow:hidden}
+  .stat .k{font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft);
+    font-weight:700}
+  .stat .v{font-family:"Fraunces",serif; font-weight:900; font-size:38px; line-height:1; margin:9px 0 3px}
+  .stat .d{font-size:12.5px; color:var(--ink-soft)}
+  .stat .glyph{position:absolute; right:-6px; bottom:-14px; font-size:60px; opacity:.10}
+
+  .charts2{display:grid; grid-template-columns:1.15fr 1fr; gap:20px; align-items:start}
+  .chart{padding:20px 20px 22px}
+  .chart h3{margin:0 0 3px; font-size:19px; font-weight:600}
+  .chart .note{font-size:12.5px; color:var(--ink-soft); margin:0 0 16px}
+  .barchart{display:flex; flex-direction:column; gap:9px}
+  .bcrow{display:grid; grid-template-columns:128px 1fr 42px; align-items:center; gap:10px;
+    cursor:pointer; font-size:13px}
+  .bcrow .nm{text-align:right; color:var(--ink); white-space:nowrap; overflow:hidden;
+    text-overflow:ellipsis}
+  .bcrow .track{height:18px; background:rgba(36,26,18,.06); border-radius:5px; overflow:hidden}
+  .bcrow .fill{height:100%; border-radius:5px; transition:width .6s cubic-bezier(.2,.8,.2,1),filter .15s}
+  .bcrow .fill.origin{background:linear-gradient(90deg,var(--accent-2),var(--accent))}
+  .bcrow .fill.type{background:linear-gradient(90deg,#b9a888,#897259)}
+  .bcrow .vv{font-family:"Fraunces",serif; font-weight:600; font-variant-numeric:tabular-nums;
+    text-align:right; font-size:13px}
+  .bcrow:hover .nm{color:var(--accent); font-weight:600}
+  .bcrow:hover .fill{filter:brightness(1.07)}
+  .bcrow.sel .nm{color:var(--accent); font-weight:700}
+  .bcrow.sel .track{outline:2px solid var(--accent); outline-offset:1px}
+  .legendkey{display:flex; gap:16px; margin-top:15px; font-size:12px; color:var(--ink-soft)}
+  .legendkey i{display:inline-block; width:13px; height:13px; border-radius:3px; margin-right:5px;
+    vertical-align:-2px}
+
+  .boroFP{display:flex; flex-direction:column; gap:15px}
+  .fp{border-top:1px solid rgba(36,26,18,.12); padding-top:12px}
+  .fp:first-child{border-top:none; padding-top:0}
+  .fp .ft{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:8px}
+  .fp .ft .bn{font-family:"Fraunces",serif; font-size:17px; font-weight:600}
+  .fp .ft .tt{font-size:12px; color:var(--ink-soft)}
+  .fp .ft .tt b{color:var(--ink); font-family:"Fraunces",serif}
+  .fp .mix{display:flex; height:15px; border-radius:5px; overflow:hidden; background:rgba(36,26,18,.06)}
+  .fp .mix span{height:100%; transition:filter .15s}
+  .fp .mix span:hover{filter:brightness(1.12)}
+  .fp .tags{display:flex; flex-wrap:wrap; gap:5px 13px; margin-top:8px; font-size:12px}
+  .fp .tags .tg{display:flex; align-items:center; gap:5px; color:var(--ink-soft)}
+  .fp .tags .tg i{width:9px; height:9px; border-radius:2px}
+  .fp .tags .tg b{color:var(--ink); font-weight:600}
+
+  /* footer / modals */
+  footer{max-width:1320px; margin:40px auto 0; padding:18px 28px 44px;
+    display:flex; gap:12px; align-items:center; flex-wrap:wrap; font-size:12.5px; color:var(--ink-soft)}
+  footer button{font-family:inherit; font-weight:600; font-size:12.5px; cursor:pointer;
+    border-radius:8px; padding:8px 14px}
+  .ai-btn{background:var(--wine); color:#fff; border:none}
+  .method-btn{background:transparent; color:var(--ink); border:1.5px solid var(--line)}
+  .modal{position:fixed; inset:0; background:rgba(30,18,8,.5); z-index:2000; display:none;
+    align-items:center; justify-content:center; padding:24px; backdrop-filter:blur(3px)}
+  .modal.show{display:flex}
+  .modal .card{max-width:660px; max-height:84vh; overflow:auto; padding:26px 30px;
+    background:var(--paper-2); border-radius:16px; border:1.5px solid var(--line); box-shadow:var(--shadow)}
+  .modal.ai .card{background:#241a2e; color:#efe6f5; border-color:#241a2e}
+  .modal .card h2{margin:0 0 8px; font-size:23px}
+  .modal .card h3{font-size:12px; text-transform:uppercase; letter-spacing:.07em; margin:18px 0 5px;
+    font-family:"Hanken Grotesk",sans-serif; font-weight:700}
+  .modal .card p,.modal .card li{font-size:14.5px; line-height:1.55}
+  .modal.ai .card a{color:#f6b86a}
+  .modal .x{float:right; cursor:pointer; border:none; background:none; font-size:24px; color:inherit; line-height:1}
+
+  /* reveal */
+  .rv{opacity:0; transform:translateY(14px); animation:rise .7s cubic-bezier(.2,.8,.2,1) forwards}
+  @keyframes rise{to{opacity:1; transform:none}}
+  .d1{animation-delay:.05s}.d2{animation-delay:.13s}.d3{animation-delay:.22s}.d4{animation-delay:.3s}
+
+  @media (max-width:980px){
+    .explorer{grid-template-columns:1fr}
+    aside.panel{max-height:none}
+    .mapcard{min-height:62vh}
+    .statgrid{grid-template-columns:repeat(2,1fr)}
+    .charts2{grid-template-columns:1fr}
+  }
+  @media (max-width:560px){
+    .stripstats{gap:18px}
+    .bcrow{grid-template-columns:96px 1fr 38px}
+  }
+</style>
+</head>
+<body>
+
+<div class="mast">
+  <div class="kicker rv">A New York City data atlas</div>
+  <h1 class="rv d1">New York <em>on a plate</em></h1>
+  <p class="lede rv d1">Every one of the city's roughly 31,000 inspected eateries carries a single cuisine tag.
+    Map them by neighborhood, see which flavors define each borough, and judge for yourself where the
+    line between a &ldquo;cuisine&rdquo; and a &ldquo;food type&rdquo; really falls.</p>
+  <div class="stripstats rv d2" id="stripstats"></div>
+</div>
+
+<section class="explorer">
+  <aside class="panel card rv d2">
+    <div class="pad">
+      <label class="fld" for="cuisine">Choose a cuisine</label>
+      <div class="selwrap"><select id="cuisine"></select></div>
+      <div class="seg" id="mode">
+        <button data-mode="count" class="on">Number of restaurants</button>
+        <button data-mode="share">Share of neighborhood</button>
+      </div>
+      <button class="deflink" id="defBtn">&#9432;&nbsp; How does the city define a cuisine?</button>
+    </div>
+    <div class="selsum">
+      <div class="big" id="bigNum">&mdash;</div>
+      <div class="lab" id="bigLab"></div>
+      <div class="boros" id="boros"></div>
+    </div>
+    <div class="ranks">
+      <h3 id="ranksHead">Top neighborhoods</h3>
+      <ol id="ranks"></ol>
+    </div>
+  </aside>
+
+  <div class="mapcard card rv d3">
+    <div id="map"></div>
+    <div class="maptag" id="maptag"></div>
+    <div class="legend" id="legend"></div>
+  </div>
+</section>
+
+<section class="dash">
+  <div class="head rv"><h2>The bigger picture</h2><span class="ln"></span></div>
+  <p class="sub rv">Beyond any single cuisine: how the whole city's restaurant menu is composed, and how
+    sharply the five boroughs differ from one another.</p>
+
+  <div class="statgrid" id="statgrid"></div>
+
+  <div class="charts2">
+    <div class="chart card rv">
+      <h3>The city's most common cuisines</h3>
+      <p class="note">Unique establishments citywide. Click any bar to map it. Color marks whether the
+        label names a place of origin or a food type / style.</p>
+      <div class="barchart" id="topCuisines"></div>
+      <div class="legendkey">
+        <span><i style="background:linear-gradient(90deg,var(--accent-2),var(--accent))"></i>Place of origin</span>
+        <span><i style="background:linear-gradient(90deg,#b9a888,#897259)"></i>Food type / style</span>
+      </div>
+    </div>
+
+    <div class="chart card rv">
+      <h3>Each borough's flavor fingerprint</h3>
+      <p class="note">The six most common cuisines in each borough, as a share of all its restaurants.
+        Grey is everything else, plus the establishments left unlabeled.</p>
+      <div class="boroFP" id="boroFP"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <button class="ai-btn" id="aiBtn">&#9888; AI caution</button>
+  <button class="method-btn" id="methodBtn">Methodology &amp; sources</button>
+  <span>Source: New York City Department of Health restaurant inspection data &middot; counts are unique establishments (distinct CAMIS)</span>
+</footer>
+
+<div class="modal" id="defModal"><div class="card">
+  <button class="x" data-close>&times;</button>
+  <h2>How the city defines a cuisine</h2>
+  <p>Short version: <strong>it doesn't, really.</strong> The cuisine label is not assigned by a city
+    analyst against a rulebook &mdash; it is chosen by the restaurant.</p>
+  <h3>What the city's own data dictionary says</h3>
+  <p>The Health Department defines the field in exactly one sentence:</p>
+  <blockquote style="margin:6px 0 10px; padding:9px 14px; border-left:3px solid var(--accent);
+    background:rgba(192,64,43,.06); font-style:italic; font-size:14px">
+    &ldquo;This field describes the entity (restaurant) cuisine. Optional field provided by
+    restaurant owner/manager.&rdquo;</blockquote>
+  <p>So the value is <strong>self-reported</strong> and <strong>optional</strong>. When a restaurant is
+    permitted, its owner or manager picks one label from a fixed list of roughly 90 choices the city
+    maintains. There is no published definition of what separates one category from another, and no
+    review of whether the pick is &ldquo;right.&rdquo;</p>
+  <h3>Why that matters here</h3>
+  <ul>
+    <li><strong>The categories are uneven by design.</strong> Some name a country (Chinese, Mexican),
+      some a region (Caribbean, Eastern European), some just a food (Pizza, Donuts, Sandwiches), some a
+      style (New American, Fusion). They sit in one flat list with no hierarchy.</li>
+    <li><strong>Because it is optional, about 3,500 establishments leave it blank</strong> &mdash; they
+      are real restaurants with no cuisine label at all.</li>
+    <li><strong>A few labels are easy to misread.</strong> &ldquo;Chinese&rdquo; covers every regional
+      Chinese cuisine; &ldquo;Spanish&rdquo; in this dataset means Spanish-Caribbean/Latino food, not
+      food from Spain.</li>
+  </ul>
+  <p>That is why this page treats the labels as the city's own coarse, self-reported tags &mdash; useful
+    at scale, but not an official taxonomy. Source:
+    <a href="https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j" target="_blank" rel="noopener">NYC Open Data dataset 43nn-pn8j</a>, column data dictionary.</p>
+</div></div>
+
+<div class="modal ai" id="aiModal"><div class="card">
+  <button class="x" data-close>&times;</button>
+  <h2>&#9888; A caution about this map</h2>
+  <p>This was built with the help of artificial intelligence (Claude). Here is exactly what was and was not checked, so nothing is a black box.</p>
+  <h3>What is solid</h3>
+  <ul>
+    <li>Counts come straight from the city's published restaurant inspection dataset and are de-duplicated to <strong>unique establishments</strong> (one count per restaurant, not per inspection).</li>
+    <li>Borough and neighborhood totals were computed by direct query, not estimated.</li>
+  </ul>
+  <h3>What to treat with care</h3>
+  <ul>
+    <li><strong>&ldquo;Cuisine&rdquo; is an optional label the restaurant owner picks</strong> from a fixed city list &mdash; the Health Department does not define or vet the categories (see &ldquo;How does the city define a cuisine?&rdquo;). It is coarse: &ldquo;Chinese&rdquo; flattens every regional Chinese cuisine; &ldquo;Spanish&rdquo; in this dataset means Spanish-Caribbean/Latino food, not food from Spain.</li>
+    <li><strong>The two groupings are an editorial call.</strong> Categories are split into &ldquo;place of origin&rdquo; (Chinese, Italian, Mexican&hellip;) and &ldquo;food types &amp; styles&rdquo; (pizza, coffee, &ldquo;American,&rdquo; &ldquo;New American,&rdquo; &ldquo;Fusion&rdquo;&hellip;). Where a category names a style rather than a country &mdash; &ldquo;New American,&rdquo; &ldquo;Fusion,&rdquo; &ldquo;Continental&rdquo; &mdash; the call is a judgment, not a fact. You can map any category either way.</li>
+    <li><strong>Neighborhoods are the city's 2010 Neighborhood Tabulation Areas.</strong> Some are large and blur famous enclaves (Koreatown straddles two; Little Italy is folded into a big SoHo-TriBeCa zone).</li>
+    <li>The dataset keeps some recently-closed establishments, so counts slightly overstate &ldquo;open right now.&rdquo;</li>
+  </ul>
+  <p>No claim of completeness is made. Verify any specific number against the source before publishing it.</p>
+</div></div>
+
+<div class="modal" id="methodModal"><div class="card">
+  <button class="x" data-close>&times;</button>
+  <h2>Methodology &amp; sources</h2>
+  <h3>Data source</h3>
+  <p>New York City Department of Health and Mental Hygiene, <em>DOHMH New York City Restaurant Inspection Results</em> (NYC Open Data, dataset <a href="https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j" target="_blank" rel="noopener">43nn-pn8j</a>).</p>
+  <h3>How the city defines &ldquo;cuisine&rdquo;</h3>
+  <p>Per the dataset's data dictionary, the cuisine field is &ldquo;an optional field provided by the restaurant owner/manager&rdquo; &mdash; self-reported, picked from a fixed list of about 90 values the city maintains. The Health Department publishes no written definition distinguishing one category from another, which is why the labels are uneven and roughly 3,500 establishments are left blank.</p>
+  <h3>Counting method</h3>
+  <ul>
+    <li>The dataset has one row per inspection violation. Each establishment carries a unique <code>CAMIS</code> id. We count <strong>distinct CAMIS</strong>, so each restaurant is counted once regardless of how many inspections or violations it has.</li>
+    <li>Each establishment is assigned to a borough and a 2010 Neighborhood Tabulation Area as recorded in the dataset.</li>
+    <li>&ldquo;Share of neighborhood&rdquo; = a cuisine's establishments divided by all establishments in that neighborhood (any cuisine, including blank/unlabeled).</li>
+  </ul>
+  <h3>Geography</h3>
+  <p>2010 Neighborhood Tabulation Areas, New York City Department of City Planning. Boundaries simplified for display.</p>
+  <h3>Known limitations</h3>
+  <ul>
+    <li>Cuisine is a single coarse, self/inspector-assigned label.</li>
+    <li>About 3,500 establishments have a blank cuisine field; roughly 600 are filed as &ldquo;Other.&rdquo;</li>
+    <li>Recently-closed establishments may still appear.</li>
+    <li>Neighborhood boundaries do not always match colloquial enclaves.</li>
+  </ul>
+</div></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+let DATA, GEO, layer, map, selected="Chinese", mode="count";
+const RAMP=["#f6d287","#eea945","#e2742f","#bf3b2c","#7d1d2d"];
+const NONE="#ece0cb";
+const BORO_ORDER=["Manhattan","Brooklyn","Queens","Bronx","Staten Island"];
+// distinct hues for borough fingerprint mixes
+const MIXCOL=["#c0402b","#e08a1e","#caa24a","#7d8b4e","#4f7d8b","#8a5a8f","#b9a888"];
+const $=s=>document.querySelector(s);
+
+Promise.all([
+  fetch("data/bundle.json").then(r=>r.json()),
+  fetch("data/nta2010.min.geojson").then(r=>r.json())
+]).then(([b,g])=>{
+  DATA=b; GEO=g;
+  buildStrip(); buildSelect(); initMap();
+  $("#cuisine").value="Chinese"; render();
+  buildStatCards(); buildTopCuisines(); buildBoroFP();
+}).catch(e=>{ $("#maptag").textContent="Could not load data: "+e; });
+
+const cuObj=raw=> DATA.cuisines.find(c=>(c.raw||c.name)===raw) || {name:raw,total:0,origin:false};
+
+/* ---------- masthead strip ---------- */
+function buildStrip(){
+  const m=DATA.meta;
+  const orig=DATA.cuisines.filter(c=>c.origin).length;
+  const items=[
+    [m.total_establishments.toLocaleString(), "inspected eateries"],
+    [m.n_cuisines, "cuisine labels"],
+    [orig, "named by place of origin"],
+    ["5", "boroughs, 195 neighborhoods"]
+  ];
+  $("#stripstats").innerHTML=items.map(([v,l])=>
+    `<div class="s"><b>${v}</b><span>${l}</span></div>`).join("");
+}
+
+/* ---------- select ---------- */
+function buildSelect(){
+  const sel=$("#cuisine");
+  const orig=DATA.cuisines.filter(c=>c.origin).sort((a,b)=>b.total-a.total);
+  const food=DATA.cuisines.filter(c=>!c.origin&&c.raw!=="").sort((a,b)=>b.total-a.total);
+  const mk=c=>{const o=document.createElement("option");o.value=c.raw||c.name;
+    o.textContent=`${c.name}  (${c.total.toLocaleString()})`;return o;};
+  const g1=document.createElement("optgroup");g1.label="Cuisines by place of origin";orig.forEach(c=>g1.appendChild(mk(c)));
+  const g2=document.createElement("optgroup");g2.label="Food types & styles";food.forEach(c=>g2.appendChild(mk(c)));
+  sel.append(g1,g2);
+  sel.addEventListener("change",e=>{selected=e.target.value;render();syncTopHighlight();});
+}
+document.querySelectorAll("#mode button").forEach(b=>b.addEventListener("click",()=>{
+  document.querySelectorAll("#mode button").forEach(x=>x.classList.remove("on"));
+  b.classList.add("on"); mode=b.dataset.mode; render();
+}));
+
+/* ---------- map ---------- */
+function initMap(){
+  map=L.map("map",{minZoom:10,maxZoom:16,zoomControl:true,scrollWheelZoom:true}).setView([40.705,-73.94],11);
+  L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png",
+    {subdomains:"abcd",attribution:"&copy; OpenStreetMap &copy; CARTO"}).addTo(map);
+  layer=L.geoJSON(GEO,{style:styleFor,onEachFeature:onEach}).addTo(map);
+  L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png",
+    {subdomains:"abcd",opacity:.55,interactive:false}).addTo(map);
+}
+function valueFor(code){
+  const m=DATA.nta_by_cuisine[selected]||{}; const n=m[code]||0;
+  if(mode==="count") return n;
+  const t=DATA.nta_total[code]||0; return t?n/t:0;
+}
+let bins=[];
+function computeBins(){
+  const m=DATA.nta_by_cuisine[selected]||{};
+  let v=Object.keys(m).map(c=>mode==="count"?m[c]:(DATA.nta_total[c]?m[c]/DATA.nta_total[c]:0)).filter(x=>x>0).sort((a,b)=>a-b);
+  if(!v.length){bins=[];return;}
+  const q=p=>v[Math.min(v.length-1,Math.floor(p*v.length))];
+  bins=[q(.2),q(.4),q(.6),q(.8),v[v.length-1]];
+  for(let i=1;i<bins.length;i++) if(bins[i]<=bins[i-1]) bins[i]=bins[i-1]+(mode==="count"?1:1e-6);
+}
+function colorFor(v){ if(v<=0)return NONE; for(let i=0;i<bins.length;i++) if(v<=bins[i])return RAMP[i]; return RAMP[4]; }
+function styleFor(ft){ return {weight:.5,color:"#b9a07e",fillColor:colorFor(valueFor(ft.properties.NTACode)),fillOpacity:.86}; }
+function tipHTML(code){
+  const m=DATA.nta_by_cuisine[selected]||{}; const n=m[code]||0; const t=DATA.nta_total[code]||0;
+  const nm=DATA.nta_name[code]||code;
+  if(mode==="count") return `<strong>${nm}</strong><br>${n} ${n===1?"restaurant":"restaurants"}`;
+  const p=t?(100*n/t).toFixed(1):"0";
+  return `<strong>${nm}</strong><br><span class="pc">${p}%</span> of its ${t} restaurants <span style="opacity:.7">(${n})</span>`;
+}
+function onEach(ft,l){
+  l.bindTooltip("",{sticky:true,className:"tip"});
+  l.on("mouseover",()=>{l.setStyle({weight:2,color:"#241a12"});l.bringToFront();l.setTooltipContent(tipHTML(ft.properties.NTACode));});
+  l.on("mouseout",()=>layer.resetStyle(l));
+  l.on("click",()=>map.fitBounds(l.getBounds(),{maxZoom:13,padding:[40,40]}));
+}
+
+/* ---------- render selected ---------- */
+function render(){
+  computeBins(); layer.setStyle(styleFor);
+  const c=cuObj(selected);
+  $("#maptag").innerHTML=`<b>${c.name}</b> &nbsp;&middot;&nbsp; `+
+    (mode==="count"?"darker = more restaurants":"darker = larger share of the neighborhood");
+  $("#bigNum").innerHTML=c.total.toLocaleString();
+  $("#bigLab").innerHTML=`<b>${c.name}</b> establishments citywide`;
+  renderBoros(); renderRanks(); renderLegend();
+}
+function renderBoros(){
+  const bm=DATA.boro_by_cuisine[selected]||{};
+  const max=Math.max(1,...BORO_ORDER.map(b=>bm[b]||0));
+  $("#boros").innerHTML=BORO_ORDER.map(b=>{
+    const v=bm[b]||0;
+    return `<div class="row"><span class="bn">${b}</span>`+
+      `<span class="track"><span class="fill" style="width:${Math.round(100*v/max)}%"></span></span>`+
+      `<span class="bv">${v}</span></div>`;
+  }).join("");
+}
+function renderRanks(){
+  const m=DATA.nta_by_cuisine[selected]||{};
+  let rows=Object.keys(m).map(code=>{const n=m[code],t=DATA.nta_total[code]||0;
+    return{code,n,share:t?n/t:0,name:DATA.nta_name[code]||code,boro:DATA.nta_boro[code]||""};});
+  rows.sort((a,b)=>mode==="count"?b.n-a.n:b.share-a.share);
+  $("#ranksHead").textContent= mode==="count"?"Top neighborhoods by count":"Top neighborhoods by share";
+  $("#ranks").innerHTML=rows.slice(0,15).map(r=>{
+    const val=mode==="count"?r.n:(100*r.share).toFixed(1)+"%";
+    return `<li data-code="${r.code}"><span class="nm">${r.name} <span class="bo">${r.boro}</span></span><span class="ct">${val}</span></li>`;
+  }).join("");
+  $("#ranks").querySelectorAll("li").forEach(li=>li.addEventListener("click",()=>{
+    const code=li.dataset.code;
+    layer.eachLayer(l=>{if(l.feature.properties.NTACode===code){map.fitBounds(l.getBounds(),{maxZoom:13,padding:[40,40]});l.openTooltip();}});
+  }));
+}
+function renderLegend(){
+  if(!bins.length){$("#legend").innerHTML="";return;}
+  const lab=v=>mode==="count"?Math.round(v):(100*v).toFixed(0)+"%";
+  $("#legend").innerHTML=`<div class="lt">${mode==="count"?"Restaurants":"Share of neighborhood"}</div>`+
+    `<div class="ramp"></div><div class="ends"><span>${mode==="count"?"1":"0%"}</span><span>${lab(bins[4])}</span></div>`;
+}
+
+/* ---------- dashboard ---------- */
+function buildStatCards(){
+  const cu=DATA.cuisines.filter(c=>c.raw).sort((a,b)=>b.total-a.total);
+  const top=cu[0];
+  // most concentrated neighborhood across origin cuisines (share)
+  let best={share:0};
+  DATA.cuisines.filter(c=>c.origin).forEach(c=>{
+    const m=DATA.nta_by_cuisine[c.raw]||{};
+    for(const code in m){const t=DATA.nta_total[code]||0; if(t>=25){const s=m[code]/t;
+      if(s>best.share) best={share:s,code,cuisine:c.name,n:m[code]};}}
+  });
+  const cards=[
+    {k:"Eateries citywide",v:DATA.meta.total_establishments.toLocaleString(),d:"inspected, de-duplicated",g:"&#127869;"},
+    {k:"Most common cuisine",v:top.name,d:`${top.total.toLocaleString()} establishments`,g:"&#127858;"},
+    {k:"Cuisine labels used",v:DATA.meta.n_cuisines,d:`${DATA.cuisines.filter(c=>c.origin).length} name a place of origin`,g:"&#127757;"},
+    {k:"Most concentrated block",v:DATA.nta_name[best.code]||"—",
+      d:`${(100*best.share).toFixed(0)}% ${best.cuisine}`,g:"&#128205;"}
+  ];
+  $("#statgrid").innerHTML=cards.map((c,i)=>
+    `<div class="card stat rv d${(i%4)+1}"><div class="k">${c.k}</div>`+
+    `<div class="v" style="font-size:${String(c.v).length>11?'24px':'38px'}">${c.v}</div>`+
+    `<div class="d">${c.d}</div><div class="glyph">${c.g}</div></div>`).join("");
+}
+function buildTopCuisines(){
+  const cu=DATA.cuisines.filter(c=>c.raw&&c.name!=="(blank / unlabeled)").sort((a,b)=>b.total-a.total).slice(0,16);
+  const max=cu[0].total;
+  $("#topCuisines").innerHTML=cu.map(c=>{
+    const raw=c.raw||c.name;
+    return `<div class="bcrow" data-raw="${raw.replace(/"/g,'&quot;')}">`+
+      `<span class="nm">${c.name}</span>`+
+      `<span class="track"><span class="fill ${c.origin?'origin':'type'}" style="width:${Math.max(2,100*c.total/max)}%"></span></span>`+
+      `<span class="vv">${c.total.toLocaleString()}</span></div>`;
+  }).join("");
+  $("#topCuisines").querySelectorAll(".bcrow").forEach(row=>row.addEventListener("click",()=>{
+    selected=row.dataset.raw; $("#cuisine").value=selected; render(); syncTopHighlight();
+    document.querySelector(".explorer").scrollIntoView({behavior:"smooth",block:"start"});
+  }));
+  syncTopHighlight();
+}
+function syncTopHighlight(){
+  document.querySelectorAll("#topCuisines .bcrow").forEach(r=>
+    r.classList.toggle("sel", r.dataset.raw===selected));
+}
+function buildBoroFP(){
+  $("#boroFP").innerHTML=BORO_ORDER.map(boro=>{
+    const tot=DATA.boro_totals[boro]||0;
+    // the borough's most common cuisines; exclude only blank/unlabeled (a non-answer,
+    // not a cuisine) -- American and every real category are kept.
+    const counts=[];
+    for(const raw in DATA.boro_by_cuisine){
+      if(raw==="") continue;
+      const n=DATA.boro_by_cuisine[raw][boro]; if(n) counts.push({raw,n,name:cuObj(raw).name});
+    }
+    counts.sort((a,b)=>b.n-a.n);
+    const top=counts.slice(0,6);
+    const segs=top.map((c,i)=>`<span title="${c.name}: ${(100*c.n/tot).toFixed(1)}%" style="width:${100*c.n/tot}%;background:${MIXCOL[i]}"></span>`).join("");
+    const tags=top.map((c,i)=>`<span class="tg"><i style="background:${MIXCOL[i]}"></i>`+
+      `<b>${c.name}</b> ${(100*c.n/tot).toFixed(0)}%</span>`).join("");
+    return `<div class="fp"><div class="ft"><span class="bn">${boro}</span>`+
+      `<span class="tt"><b>${tot.toLocaleString()}</b> restaurants</span></div>`+
+      `<div class="mix">${segs}<span style="flex:1;background:rgba(36,26,18,.08)"></span></div>`+
+      `<div class="tags">${tags}</div></div>`;
+  }).join("");
+}
+
+/* modals */
+$("#aiBtn").onclick=()=>$("#aiModal").classList.add("show");
+$("#methodBtn").onclick=()=>$("#methodModal").classList.add("show");
+$("#defBtn").onclick=()=>$("#defModal").classList.add("show");
+document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{
+  if(e.target===m||e.target.hasAttribute("data-close")) m.classList.remove("show");}));
+document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".modal").forEach(m=>m.classList.remove("show"));});
+</script>
+</body>
+</html>

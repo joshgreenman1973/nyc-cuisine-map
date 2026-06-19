@@ -1,0 +1,389 @@
+[{"boro":"Bronx","cuisine_description":"Afghan","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"Afghan","n":"1"}
+,{"boro":"Manhattan","cuisine_description":"Afghan","n":"3"}
+,{"boro":"Queens","cuisine_description":"Afghan","n":"9"}
+,{"boro":"Bronx","cuisine_description":"African","n":"37"}
+,{"boro":"Brooklyn","cuisine_description":"African","n":"24"}
+,{"boro":"Manhattan","cuisine_description":"African","n":"27"}
+,{"boro":"Queens","cuisine_description":"African","n":"7"}
+,{"boro":"Staten Island","cuisine_description":"African","n":"3"}
+,{"boro":"0","cuisine_description":"American","n":"9"}
+,{"boro":"Bronx","cuisine_description":"American","n":"319"}
+,{"boro":"Brooklyn","cuisine_description":"American","n":"1077"}
+,{"boro":"Manhattan","cuisine_description":"American","n":"2490"}
+,{"boro":"Queens","cuisine_description":"American","n":"819"}
+,{"boro":"Staten Island","cuisine_description":"American","n":"162"}
+,{"boro":"Brooklyn","cuisine_description":"Armenian","n":"1"}
+,{"boro":"Manhattan","cuisine_description":"Armenian","n":"9"}
+,{"boro":"Queens","cuisine_description":"Armenian","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Asian/Asian Fusion","n":"11"}
+,{"boro":"Brooklyn","cuisine_description":"Asian/Asian Fusion","n":"102"}
+,{"boro":"Manhattan","cuisine_description":"Asian/Asian Fusion","n":"193"}
+,{"boro":"Queens","cuisine_description":"Asian/Asian Fusion","n":"156"}
+,{"boro":"Staten Island","cuisine_description":"Asian/Asian Fusion","n":"22"}
+,{"boro":"Brooklyn","cuisine_description":"Australian","n":"3"}
+,{"boro":"Manhattan","cuisine_description":"Australian","n":"28"}
+,{"boro":"Bronx","cuisine_description":"Bagels/Pretzels","n":"4"}
+,{"boro":"Brooklyn","cuisine_description":"Bagels/Pretzels","n":"69"}
+,{"boro":"Manhattan","cuisine_description":"Bagels/Pretzels","n":"103"}
+,{"boro":"Queens","cuisine_description":"Bagels/Pretzels","n":"48"}
+,{"boro":"Staten Island","cuisine_description":"Bagels/Pretzels","n":"10"}
+,{"boro":"0","cuisine_description":"Bakery Products/Desserts","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Bakery Products/Desserts","n":"86"}
+,{"boro":"Brooklyn","cuisine_description":"Bakery Products/Desserts","n":"227"}
+,{"boro":"Manhattan","cuisine_description":"Bakery Products/Desserts","n":"310"}
+,{"boro":"Queens","cuisine_description":"Bakery Products/Desserts","n":"276"}
+,{"boro":"Staten Island","cuisine_description":"Bakery Products/Desserts","n":"31"}
+,{"boro":"Bronx","cuisine_description":"Bangladeshi","n":"11"}
+,{"boro":"Brooklyn","cuisine_description":"Bangladeshi","n":"16"}
+,{"boro":"Manhattan","cuisine_description":"Bangladeshi","n":"6"}
+,{"boro":"Queens","cuisine_description":"Bangladeshi","n":"46"}
+,{"boro":"Staten Island","cuisine_description":"Bangladeshi","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Barbecue","n":"2"}
+,{"boro":"Brooklyn","cuisine_description":"Barbecue","n":"14"}
+,{"boro":"Manhattan","cuisine_description":"Barbecue","n":"17"}
+,{"boro":"Queens","cuisine_description":"Barbecue","n":"16"}
+,{"boro":"Staten Island","cuisine_description":"Barbecue","n":"3"}
+,{"boro":"Bronx","cuisine_description":"Basque","n":"1"}
+,{"boro":"Manhattan","cuisine_description":"Basque","n":"2"}
+,{"boro":"Bronx","cuisine_description":"Bottled Beverages","n":"10"}
+,{"boro":"Brooklyn","cuisine_description":"Bottled Beverages","n":"28"}
+,{"boro":"Manhattan","cuisine_description":"Bottled Beverages","n":"46"}
+,{"boro":"Queens","cuisine_description":"Bottled Beverages","n":"33"}
+,{"boro":"Staten Island","cuisine_description":"Bottled Beverages","n":"2"}
+,{"boro":"Brooklyn","cuisine_description":"Brazilian","n":"7"}
+,{"boro":"Manhattan","cuisine_description":"Brazilian","n":"15"}
+,{"boro":"Queens","cuisine_description":"Brazilian","n":"17"}
+,{"boro":"Bronx","cuisine_description":"Cajun","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"Cajun","n":"1"}
+,{"boro":"Manhattan","cuisine_description":"Cajun","n":"2"}
+,{"boro":"Queens","cuisine_description":"Cajun","n":"2"}
+,{"boro":"Staten Island","cuisine_description":"Cajun","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"Californian","n":"4"}
+,{"boro":"Manhattan","cuisine_description":"Californian","n":"16"}
+,{"boro":"Queens","cuisine_description":"Californian","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Caribbean","n":"113"}
+,{"boro":"Brooklyn","cuisine_description":"Caribbean","n":"351"}
+,{"boro":"Manhattan","cuisine_description":"Caribbean","n":"54"}
+,{"boro":"Queens","cuisine_description":"Caribbean","n":"232"}
+,{"boro":"Staten Island","cuisine_description":"Caribbean","n":"3"}
+,{"boro":"Bronx","cuisine_description":"Chicken","n":"165"}
+,{"boro":"Brooklyn","cuisine_description":"Chicken","n":"218"}
+,{"boro":"Manhattan","cuisine_description":"Chicken","n":"155"}
+,{"boro":"Queens","cuisine_description":"Chicken","n":"181"}
+,{"boro":"Staten Island","cuisine_description":"Chicken","n":"23"}
+,{"boro":"Queens","cuisine_description":"Chilean","n":"2"}
+,{"boro":"Queens","cuisine_description":"Chimichurri","n":"1"}
+,{"boro":"0","cuisine_description":"Chinese","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Chinese","n":"236"}
+,{"boro":"Brooklyn","cuisine_description":"Chinese","n":"659"}
+,{"boro":"Manhattan","cuisine_description":"Chinese","n":"542"}
+,{"boro":"Queens","cuisine_description":"Chinese","n":"766"}
+,{"boro":"Staten Island","cuisine_description":"Chinese","n":"92"}
+,{"boro":"Bronx","cuisine_description":"Chinese/Cuban","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"Chinese/Cuban","n":"4"}
+,{"boro":"Manhattan","cuisine_description":"Chinese/Cuban","n":"9"}
+,{"boro":"Queens","cuisine_description":"Chinese/Cuban","n":"3"}
+,{"boro":"Bronx","cuisine_description":"Chinese/Japanese","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"Chinese/Japanese","n":"13"}
+,{"boro":"Manhattan","cuisine_description":"Chinese/Japanese","n":"10"}
+,{"boro":"Queens","cuisine_description":"Chinese/Japanese","n":"12"}
+,{"boro":"0","cuisine_description":"Coffee/Tea","n":"4"}
+,{"boro":"Bronx","cuisine_description":"Coffee/Tea","n":"89"}
+,{"boro":"Brooklyn","cuisine_description":"Coffee/Tea","n":"600"}
+,{"boro":"Manhattan","cuisine_description":"Coffee/Tea","n":"1120"}
+,{"boro":"Queens","cuisine_description":"Coffee/Tea","n":"352"}
+,{"boro":"Staten Island","cuisine_description":"Coffee/Tea","n":"61"}
+,{"boro":"0","cuisine_description":"Continental","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Continental","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"Continental","n":"3"}
+,{"boro":"Manhattan","cuisine_description":"Continental","n":"29"}
+,{"boro":"Queens","cuisine_description":"Continental","n":"11"}
+,{"boro":"Staten Island","cuisine_description":"Continental","n":"2"}
+,{"boro":"Brooklyn","cuisine_description":"Creole","n":"15"}
+,{"boro":"Manhattan","cuisine_description":"Creole","n":"1"}
+,{"boro":"Queens","cuisine_description":"Creole","n":"5"}
+,{"boro":"Bronx","cuisine_description":"Creole/Cajun","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"Creole/Cajun","n":"2"}
+,{"boro":"Manhattan","cuisine_description":"Creole/Cajun","n":"1"}
+,{"boro":"Queens","cuisine_description":"Creole/Cajun","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"Czech","n":"1"}
+,{"boro":"Manhattan","cuisine_description":"Czech","n":"1"}
+,{"boro":"Queens","cuisine_description":"Czech","n":"2"}
+,{"boro":"Bronx","cuisine_description":"Donuts","n":"74"}
+,{"boro":"Brooklyn","cuisine_description":"Donuts","n":"122"}
+,{"boro":"Manhattan","cuisine_description":"Donuts","n":"167"}
+,{"boro":"Queens","cuisine_description":"Donuts","n":"144"}
+,{"boro":"Staten Island","cuisine_description":"Donuts","n":"37"}
+,{"boro":"Bronx","cuisine_description":"Eastern European","n":"3"}
+,{"boro":"Brooklyn","cuisine_description":"Eastern European","n":"76"}
+,{"boro":"Manhattan","cuisine_description":"Eastern European","n":"31"}
+,{"boro":"Queens","cuisine_description":"Eastern European","n":"17"}
+,{"boro":"Staten Island","cuisine_description":"Eastern European","n":"2"}
+,{"boro":"Brooklyn","cuisine_description":"Egyptian","n":"3"}
+,{"boro":"Manhattan","cuisine_description":"Egyptian","n":"4"}
+,{"boro":"Queens","cuisine_description":"Egyptian","n":"5"}
+,{"boro":"Brooklyn","cuisine_description":"English","n":"2"}
+,{"boro":"Manhattan","cuisine_description":"English","n":"9"}
+,{"boro":"Queens","cuisine_description":"English","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"Ethiopian","n":"6"}
+,{"boro":"Manhattan","cuisine_description":"Ethiopian","n":"13"}
+,{"boro":"Queens","cuisine_description":"Ethiopian","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"Filipino","n":"3"}
+,{"boro":"Manhattan","cuisine_description":"Filipino","n":"11"}
+,{"boro":"Queens","cuisine_description":"Filipino","n":"24"}
+,{"boro":"Staten Island","cuisine_description":"Filipino","n":"1"}
+,{"boro":"0","cuisine_description":"French","n":"2"}
+,{"boro":"Bronx","cuisine_description":"French","n":"4"}
+,{"boro":"Brooklyn","cuisine_description":"French","n":"41"}
+,{"boro":"Manhattan","cuisine_description":"French","n":"232"}
+,{"boro":"Queens","cuisine_description":"French","n":"18"}
+,{"boro":"Bronx","cuisine_description":"Frozen Desserts","n":"25"}
+,{"boro":"Brooklyn","cuisine_description":"Frozen Desserts","n":"98"}
+,{"boro":"Manhattan","cuisine_description":"Frozen Desserts","n":"148"}
+,{"boro":"Queens","cuisine_description":"Frozen Desserts","n":"89"}
+,{"boro":"Staten Island","cuisine_description":"Frozen Desserts","n":"32"}
+,{"boro":"Bronx","cuisine_description":"Fruits/Vegetables","n":"1"}
+,{"boro":"Manhattan","cuisine_description":"Fruits/Vegetables","n":"4"}
+,{"boro":"Queens","cuisine_description":"Fruits/Vegetables","n":"4"}
+,{"boro":"Bronx","cuisine_description":"Fusion","n":"11"}
+,{"boro":"Brooklyn","cuisine_description":"Fusion","n":"29"}
+,{"boro":"Manhattan","cuisine_description":"Fusion","n":"38"}
+,{"boro":"Queens","cuisine_description":"Fusion","n":"30"}
+,{"boro":"Staten Island","cuisine_description":"Fusion","n":"1"}
+,{"boro":"Bronx","cuisine_description":"German","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"German","n":"11"}
+,{"boro":"Manhattan","cuisine_description":"German","n":"12"}
+,{"boro":"Queens","cuisine_description":"German","n":"8"}
+,{"boro":"Staten Island","cuisine_description":"German","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Greek","n":"5"}
+,{"boro":"Brooklyn","cuisine_description":"Greek","n":"20"}
+,{"boro":"Manhattan","cuisine_description":"Greek","n":"58"}
+,{"boro":"Queens","cuisine_description":"Greek","n":"57"}
+,{"boro":"Staten Island","cuisine_description":"Greek","n":"3"}
+,{"boro":"Bronx","cuisine_description":"Hamburgers","n":"83"}
+,{"boro":"Brooklyn","cuisine_description":"Hamburgers","n":"123"}
+,{"boro":"Manhattan","cuisine_description":"Hamburgers","n":"146"}
+,{"boro":"Queens","cuisine_description":"Hamburgers","n":"125"}
+,{"boro":"Staten Island","cuisine_description":"Hamburgers","n":"22"}
+,{"boro":"Manhattan","cuisine_description":"Haute Cuisine","n":"2"}
+,{"boro":"Brooklyn","cuisine_description":"Hawaiian","n":"11"}
+,{"boro":"Manhattan","cuisine_description":"Hawaiian","n":"23"}
+,{"boro":"Queens","cuisine_description":"Hawaiian","n":"8"}
+,{"boro":"Staten Island","cuisine_description":"Hawaiian","n":"2"}
+,{"boro":"Bronx","cuisine_description":"Hotdogs","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"Hotdogs","n":"12"}
+,{"boro":"Manhattan","cuisine_description":"Hotdogs","n":"14"}
+,{"boro":"Queens","cuisine_description":"Hotdogs","n":"6"}
+,{"boro":"Bronx","cuisine_description":"Hotdogs/Pretzels","n":"3"}
+,{"boro":"Brooklyn","cuisine_description":"Hotdogs/Pretzels","n":"6"}
+,{"boro":"Manhattan","cuisine_description":"Hotdogs/Pretzels","n":"17"}
+,{"boro":"Queens","cuisine_description":"Hotdogs/Pretzels","n":"4"}
+,{"boro":"Staten Island","cuisine_description":"Hotdogs/Pretzels","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Indian","n":"12"}
+,{"boro":"Brooklyn","cuisine_description":"Indian","n":"61"}
+,{"boro":"Manhattan","cuisine_description":"Indian","n":"148"}
+,{"boro":"Queens","cuisine_description":"Indian","n":"93"}
+,{"boro":"Staten Island","cuisine_description":"Indian","n":"9"}
+,{"boro":"Brooklyn","cuisine_description":"Indonesian","n":"3"}
+,{"boro":"Manhattan","cuisine_description":"Indonesian","n":"2"}
+,{"boro":"Queens","cuisine_description":"Indonesian","n":"4"}
+,{"boro":"Brooklyn","cuisine_description":"Iranian","n":"2"}
+,{"boro":"Manhattan","cuisine_description":"Iranian","n":"1"}
+,{"boro":"Queens","cuisine_description":"Iranian","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Irish","n":"13"}
+,{"boro":"Brooklyn","cuisine_description":"Irish","n":"18"}
+,{"boro":"Manhattan","cuisine_description":"Irish","n":"111"}
+,{"boro":"Queens","cuisine_description":"Irish","n":"51"}
+,{"boro":"Staten Island","cuisine_description":"Irish","n":"4"}
+,{"boro":"0","cuisine_description":"Italian","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Italian","n":"39"}
+,{"boro":"Brooklyn","cuisine_description":"Italian","n":"183"}
+,{"boro":"Manhattan","cuisine_description":"Italian","n":"606"}
+,{"boro":"Queens","cuisine_description":"Italian","n":"112"}
+,{"boro":"Staten Island","cuisine_description":"Italian","n":"67"}
+,{"boro":"0","cuisine_description":"Japanese","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Japanese","n":"29"}
+,{"boro":"Brooklyn","cuisine_description":"Japanese","n":"240"}
+,{"boro":"Manhattan","cuisine_description":"Japanese","n":"558"}
+,{"boro":"Queens","cuisine_description":"Japanese","n":"186"}
+,{"boro":"Staten Island","cuisine_description":"Japanese","n":"45"}
+,{"boro":"0","cuisine_description":"Jewish/Kosher","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Jewish/Kosher","n":"8"}
+,{"boro":"Brooklyn","cuisine_description":"Jewish/Kosher","n":"185"}
+,{"boro":"Manhattan","cuisine_description":"Jewish/Kosher","n":"83"}
+,{"boro":"Queens","cuisine_description":"Jewish/Kosher","n":"61"}
+,{"boro":"Staten Island","cuisine_description":"Jewish/Kosher","n":"5"}
+,{"boro":"0","cuisine_description":"Juice, Smoothies, Fruit Salads","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Juice, Smoothies, Fruit Salads","n":"63"}
+,{"boro":"Brooklyn","cuisine_description":"Juice, Smoothies, Fruit Salads","n":"141"}
+,{"boro":"Manhattan","cuisine_description":"Juice, Smoothies, Fruit Salads","n":"208"}
+,{"boro":"Queens","cuisine_description":"Juice, Smoothies, Fruit Salads","n":"112"}
+,{"boro":"Staten Island","cuisine_description":"Juice, Smoothies, Fruit Salads","n":"23"}
+,{"boro":"Bronx","cuisine_description":"Korean","n":"3"}
+,{"boro":"Brooklyn","cuisine_description":"Korean","n":"38"}
+,{"boro":"Manhattan","cuisine_description":"Korean","n":"181"}
+,{"boro":"Queens","cuisine_description":"Korean","n":"202"}
+,{"boro":"Staten Island","cuisine_description":"Korean","n":"6"}
+,{"boro":"Bronx","cuisine_description":"Latin American","n":"185"}
+,{"boro":"Brooklyn","cuisine_description":"Latin American","n":"211"}
+,{"boro":"Manhattan","cuisine_description":"Latin American","n":"206"}
+,{"boro":"Queens","cuisine_description":"Latin American","n":"471"}
+,{"boro":"Staten Island","cuisine_description":"Latin American","n":"15"}
+,{"boro":"Brooklyn","cuisine_description":"Lebanese","n":"3"}
+,{"boro":"Manhattan","cuisine_description":"Lebanese","n":"3"}
+,{"boro":"Bronx","cuisine_description":"Mediterranean","n":"8"}
+,{"boro":"Brooklyn","cuisine_description":"Mediterranean","n":"84"}
+,{"boro":"Manhattan","cuisine_description":"Mediterranean","n":"173"}
+,{"boro":"Queens","cuisine_description":"Mediterranean","n":"42"}
+,{"boro":"Staten Island","cuisine_description":"Mediterranean","n":"12"}
+,{"boro":"0","cuisine_description":"Mexican","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Mexican","n":"153"}
+,{"boro":"Brooklyn","cuisine_description":"Mexican","n":"330"}
+,{"boro":"Manhattan","cuisine_description":"Mexican","n":"297"}
+,{"boro":"Queens","cuisine_description":"Mexican","n":"263"}
+,{"boro":"Staten Island","cuisine_description":"Mexican","n":"57"}
+,{"boro":"0","cuisine_description":"Middle Eastern","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Middle Eastern","n":"22"}
+,{"boro":"Brooklyn","cuisine_description":"Middle Eastern","n":"120"}
+,{"boro":"Manhattan","cuisine_description":"Middle Eastern","n":"83"}
+,{"boro":"Queens","cuisine_description":"Middle Eastern","n":"53"}
+,{"boro":"Staten Island","cuisine_description":"Middle Eastern","n":"8"}
+,{"boro":"Bronx","cuisine_description":"Moroccan","n":"1"}
+,{"boro":"Manhattan","cuisine_description":"Moroccan","n":"6"}
+,{"boro":"Queens","cuisine_description":"Moroccan","n":"4"}
+,{"boro":"0","cuisine_description":"New American","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"New American","n":"48"}
+,{"boro":"Manhattan","cuisine_description":"New American","n":"116"}
+,{"boro":"Queens","cuisine_description":"New American","n":"25"}
+,{"boro":"Staten Island","cuisine_description":"New American","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"New French","n":"9"}
+,{"boro":"Manhattan","cuisine_description":"New French","n":"15"}
+,{"boro":"Queens","cuisine_description":"New French","n":"2"}
+,{"boro":"Bronx","cuisine_description":"Not Listed/Not Applicable","n":"2"}
+,{"boro":"Brooklyn","cuisine_description":"Not Listed/Not Applicable","n":"2"}
+,{"boro":"Manhattan","cuisine_description":"Not Listed/Not Applicable","n":"3"}
+,{"boro":"Queens","cuisine_description":"Not Listed/Not Applicable","n":"1"}
+,{"boro":"Manhattan","cuisine_description":"Nuts/Confectionary","n":"7"}
+,{"boro":"Bronx","cuisine_description":"Other","n":"40"}
+,{"boro":"Brooklyn","cuisine_description":"Other","n":"165"}
+,{"boro":"Manhattan","cuisine_description":"Other","n":"250"}
+,{"boro":"Queens","cuisine_description":"Other","n":"107"}
+,{"boro":"Staten Island","cuisine_description":"Other","n":"25"}
+,{"boro":"Bronx","cuisine_description":"Pakistani","n":"5"}
+,{"boro":"Brooklyn","cuisine_description":"Pakistani","n":"14"}
+,{"boro":"Manhattan","cuisine_description":"Pakistani","n":"8"}
+,{"boro":"Queens","cuisine_description":"Pakistani","n":"11"}
+,{"boro":"Bronx","cuisine_description":"Pancakes/Waffles","n":"10"}
+,{"boro":"Brooklyn","cuisine_description":"Pancakes/Waffles","n":"12"}
+,{"boro":"Manhattan","cuisine_description":"Pancakes/Waffles","n":"7"}
+,{"boro":"Queens","cuisine_description":"Pancakes/Waffles","n":"12"}
+,{"boro":"Bronx","cuisine_description":"Peruvian","n":"4"}
+,{"boro":"Brooklyn","cuisine_description":"Peruvian","n":"12"}
+,{"boro":"Manhattan","cuisine_description":"Peruvian","n":"20"}
+,{"boro":"Queens","cuisine_description":"Peruvian","n":"60"}
+,{"boro":"Staten Island","cuisine_description":"Peruvian","n":"5"}
+,{"boro":"Bronx","cuisine_description":"Pizza","n":"253"}
+,{"boro":"Brooklyn","cuisine_description":"Pizza","n":"421"}
+,{"boro":"Manhattan","cuisine_description":"Pizza","n":"489"}
+,{"boro":"Queens","cuisine_description":"Pizza","n":"349"}
+,{"boro":"Staten Island","cuisine_description":"Pizza","n":"109"}
+,{"boro":"Brooklyn","cuisine_description":"Polish","n":"12"}
+,{"boro":"Manhattan","cuisine_description":"Polish","n":"3"}
+,{"boro":"Queens","cuisine_description":"Polish","n":"1"}
+,{"boro":"Staten Island","cuisine_description":"Polish","n":"2"}
+,{"boro":"Brooklyn","cuisine_description":"Polynesian","n":"1"}
+,{"boro":"Manhattan","cuisine_description":"Polynesian","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"Portuguese","n":"1"}
+,{"boro":"Manhattan","cuisine_description":"Portuguese","n":"6"}
+,{"boro":"Queens","cuisine_description":"Portuguese","n":"5"}
+,{"boro":"Brooklyn","cuisine_description":"Russian","n":"30"}
+,{"boro":"Manhattan","cuisine_description":"Russian","n":"9"}
+,{"boro":"Queens","cuisine_description":"Russian","n":"2"}
+,{"boro":"Staten Island","cuisine_description":"Russian","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Salads","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"Salads","n":"21"}
+,{"boro":"Manhattan","cuisine_description":"Salads","n":"97"}
+,{"boro":"Queens","cuisine_description":"Salads","n":"9"}
+,{"boro":"Bronx","cuisine_description":"Sandwiches","n":"44"}
+,{"boro":"Brooklyn","cuisine_description":"Sandwiches","n":"88"}
+,{"boro":"Manhattan","cuisine_description":"Sandwiches","n":"200"}
+,{"boro":"Queens","cuisine_description":"Sandwiches","n":"107"}
+,{"boro":"Staten Island","cuisine_description":"Sandwiches","n":"25"}
+,{"boro":"0","cuisine_description":"Sandwiches/Salads/Mixed Buffet","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Sandwiches/Salads/Mixed Buffet","n":"11"}
+,{"boro":"Brooklyn","cuisine_description":"Sandwiches/Salads/Mixed Buffet","n":"27"}
+,{"boro":"Manhattan","cuisine_description":"Sandwiches/Salads/Mixed Buffet","n":"86"}
+,{"boro":"Queens","cuisine_description":"Sandwiches/Salads/Mixed Buffet","n":"27"}
+,{"boro":"Staten Island","cuisine_description":"Sandwiches/Salads/Mixed Buffet","n":"4"}
+,{"boro":"Brooklyn","cuisine_description":"Scandinavian","n":"5"}
+,{"boro":"Manhattan","cuisine_description":"Scandinavian","n":"4"}
+,{"boro":"0","cuisine_description":"Seafood","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Seafood","n":"34"}
+,{"boro":"Brooklyn","cuisine_description":"Seafood","n":"69"}
+,{"boro":"Manhattan","cuisine_description":"Seafood","n":"100"}
+,{"boro":"Queens","cuisine_description":"Seafood","n":"32"}
+,{"boro":"Staten Island","cuisine_description":"Seafood","n":"4"}
+,{"boro":"Bronx","cuisine_description":"Soul Food","n":"5"}
+,{"boro":"Brooklyn","cuisine_description":"Soul Food","n":"26"}
+,{"boro":"Manhattan","cuisine_description":"Soul Food","n":"20"}
+,{"boro":"Queens","cuisine_description":"Soul Food","n":"5"}
+,{"boro":"Staten Island","cuisine_description":"Soul Food","n":"4"}
+,{"boro":"Brooklyn","cuisine_description":"Soups","n":"2"}
+,{"boro":"Manhattan","cuisine_description":"Soups","n":"2"}
+,{"boro":"0","cuisine_description":"Soups/Salads/Sandwiches","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Soups/Salads/Sandwiches","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"Soups/Salads/Sandwiches","n":"8"}
+,{"boro":"Manhattan","cuisine_description":"Soups/Salads/Sandwiches","n":"37"}
+,{"boro":"Queens","cuisine_description":"Soups/Salads/Sandwiches","n":"8"}
+,{"boro":"Staten Island","cuisine_description":"Soups/Salads/Sandwiches","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"Southeast Asian","n":"43"}
+,{"boro":"Manhattan","cuisine_description":"Southeast Asian","n":"41"}
+,{"boro":"Queens","cuisine_description":"Southeast Asian","n":"22"}
+,{"boro":"Bronx","cuisine_description":"Southwestern","n":"1"}
+,{"boro":"Brooklyn","cuisine_description":"Southwestern","n":"1"}
+,{"boro":"Manhattan","cuisine_description":"Southwestern","n":"3"}
+,{"boro":"Queens","cuisine_description":"Southwestern","n":"1"}
+,{"boro":"0","cuisine_description":"Spanish","n":"2"}
+,{"boro":"Bronx","cuisine_description":"Spanish","n":"128"}
+,{"boro":"Brooklyn","cuisine_description":"Spanish","n":"123"}
+,{"boro":"Manhattan","cuisine_description":"Spanish","n":"118"}
+,{"boro":"Queens","cuisine_description":"Spanish","n":"126"}
+,{"boro":"Staten Island","cuisine_description":"Spanish","n":"20"}
+,{"boro":"Bronx","cuisine_description":"Steakhouse","n":"5"}
+,{"boro":"Brooklyn","cuisine_description":"Steakhouse","n":"15"}
+,{"boro":"Manhattan","cuisine_description":"Steakhouse","n":"61"}
+,{"boro":"Queens","cuisine_description":"Steakhouse","n":"14"}
+,{"boro":"Staten Island","cuisine_description":"Steakhouse","n":"2"}
+,{"boro":"Brooklyn","cuisine_description":"Tapas","n":"19"}
+,{"boro":"Manhattan","cuisine_description":"Tapas","n":"21"}
+,{"boro":"Queens","cuisine_description":"Tapas","n":"6"}
+,{"boro":"Staten Island","cuisine_description":"Tapas","n":"1"}
+,{"boro":"Bronx","cuisine_description":"Tex-Mex","n":"39"}
+,{"boro":"Brooklyn","cuisine_description":"Tex-Mex","n":"73"}
+,{"boro":"Manhattan","cuisine_description":"Tex-Mex","n":"117"}
+,{"boro":"Queens","cuisine_description":"Tex-Mex","n":"66"}
+,{"boro":"Staten Island","cuisine_description":"Tex-Mex","n":"14"}
+,{"boro":"Bronx","cuisine_description":"Thai","n":"4"}
+,{"boro":"Brooklyn","cuisine_description":"Thai","n":"103"}
+,{"boro":"Manhattan","cuisine_description":"Thai","n":"149"}
+,{"boro":"Queens","cuisine_description":"Thai","n":"93"}
+,{"boro":"Staten Island","cuisine_description":"Thai","n":"6"}
+,{"boro":"Brooklyn","cuisine_description":"Turkish","n":"39"}
+,{"boro":"Manhattan","cuisine_description":"Turkish","n":"23"}
+,{"boro":"Queens","cuisine_description":"Turkish","n":"7"}
+,{"boro":"Staten Island","cuisine_description":"Turkish","n":"8"}
+,{"boro":"Bronx","cuisine_description":"Vegan","n":"2"}
+,{"boro":"Brooklyn","cuisine_description":"Vegan","n":"32"}
+,{"boro":"Manhattan","cuisine_description":"Vegan","n":"37"}
+,{"boro":"Queens","cuisine_description":"Vegan","n":"3"}
+,{"boro":"Bronx","cuisine_description":"Vegetarian","n":"2"}
+,{"boro":"Brooklyn","cuisine_description":"Vegetarian","n":"25"}
+,{"boro":"Manhattan","cuisine_description":"Vegetarian","n":"22"}
+,{"boro":"Queens","cuisine_description":"Vegetarian","n":"8"}
+,{"boro":"0","n":"48"}
+,{"boro":"Bronx","n":"203"}
+,{"boro":"Brooklyn","n":"872"}
+,{"boro":"Manhattan","n":"1596"}
+,{"boro":"Queens","n":"695"}
+,{"boro":"Staten Island","n":"116"}]

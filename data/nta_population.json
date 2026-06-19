@@ -1,0 +1,195 @@
+[{"nta_code":"BX01","nta_name":"Claremont-Bathgate","population":"31078"}
+,{"nta_code":"BX03","nta_name":"Eastchester-Edenwald-Baychester","population":"34517"}
+,{"nta_code":"BX05","nta_name":"Bedford Park-Fordham North","population":"54415"}
+,{"nta_code":"BX06","nta_name":"Belmont","population":"27378"}
+,{"nta_code":"BX07","nta_name":"Bronxdale","population":"35538"}
+,{"nta_code":"BX08","nta_name":"West Farms-Bronx River","population":"35011"}
+,{"nta_code":"BX09","nta_name":"Soundview-Castle Hill-Clason Point-Harding Park","population":"53686"}
+,{"nta_code":"BX10","nta_name":"Pelham Bay-Country Club-City Island","population":"26583"}
+,{"nta_code":"BX13","nta_name":"Co-Op City","population":"43752"}
+,{"nta_code":"BX14","nta_name":"East Concourse-Concourse Village","population":"62284"}
+,{"nta_code":"BX17","nta_name":"East Tremont","population":"43423"}
+,{"nta_code":"BX22","nta_name":"North Riverdale-Fieldston-Riverdale","population":"27860"}
+,{"nta_code":"BX26","nta_name":"Highbridge","population":"37727"}
+,{"nta_code":"BX27","nta_name":"Hunts Point","population":"27204"}
+,{"nta_code":"BX28","nta_name":"Van Cortlandt Village","population":"50100"}
+,{"nta_code":"BX29","nta_name":"Spuyten Duyvil-Kingsbridge","population":"30161"}
+,{"nta_code":"BX30","nta_name":"Kingsbridge Heights","population":"32496"}
+,{"nta_code":"BX31","nta_name":"Allerton-Pelham Gardens","population":"28903"}
+,{"nta_code":"BX33","nta_name":"Longwood","population":"26196"}
+,{"nta_code":"BX34","nta_name":"Melrose South-Mott Haven North","population":"39214"}
+,{"nta_code":"BX35","nta_name":"Morrisania-Melrose","population":"37865"}
+,{"nta_code":"BX36","nta_name":"University Heights-Morris Heights","population":"54188"}
+,{"nta_code":"BX37","nta_name":"Van Nest-Morris Park-Westchester Square","population":"29250"}
+,{"nta_code":"BX39","nta_name":"Mott Haven-Port Morris","population":"52413"}
+,{"nta_code":"BX40","nta_name":"Fordham South","population":"28262"}
+,{"nta_code":"BX41","nta_name":"Mount Hope","population":"51807"}
+,{"nta_code":"BX43","nta_name":"Norwood","population":"40494"}
+,{"nta_code":"BX44","nta_name":"Williamsbridge-Olinville","population":"61321"}
+,{"nta_code":"BX46","nta_name":"Parkchester","population":"29821"}
+,{"nta_code":"BX49","nta_name":"Pelham Parkway","population":"30073"}
+,{"nta_code":"BX52","nta_name":"Schuylerville-Throgs Neck-Edgewater Park","population":"44167"}
+,{"nta_code":"BX55","nta_name":"Soundview-Bruckner","population":"35634"}
+,{"nta_code":"BX59","nta_name":"Westchester-Unionport","population":"27248"}
+,{"nta_code":"BX62","nta_name":"Woodlawn-Wakefield","population":"42483"}
+,{"nta_code":"BX63","nta_name":"West Concourse","population":"39282"}
+,{"nta_code":"BX75","nta_name":"Crotona Park East","population":"20277"}
+,{"nta_code":"BX98","nta_name":"Rikers Island","population":"11091"}
+,{"nta_code":"BX99","nta_name":"park-cemetery-etc-Bronx","population":"1906"}
+,{"nta_code":"BK09","nta_name":"Brooklyn Heights-Cobble Hill","population":"22887"}
+,{"nta_code":"BK17","nta_name":"Sheepshead Bay-Gerritsen Beach-Manhattn Bch","population":"64518"}
+,{"nta_code":"BK19","nta_name":"Brighton Beach","population":"35547"}
+,{"nta_code":"BK21","nta_name":"Seagate-Coney Island","population":"31965"}
+,{"nta_code":"BK23","nta_name":"West Brighton","population":"17750"}
+,{"nta_code":"BK25","nta_name":"Homecrest","population":"44316"}
+,{"nta_code":"BK26","nta_name":"Gravesend","population":"29436"}
+,{"nta_code":"BK27","nta_name":"Bath Beach","population":"29931"}
+,{"nta_code":"BK28","nta_name":"Bensonhurst West","population":"88727"}
+,{"nta_code":"BK29","nta_name":"Bensonhurst East","population":"62978"}
+,{"nta_code":"BK30","nta_name":"Dyker Heights","population":"42419"}
+,{"nta_code":"BK31","nta_name":"Bay Ridge","population":"79371"}
+,{"nta_code":"BK32","nta_name":"Sunset Park West","population":"54041"}
+,{"nta_code":"BK33","nta_name":"Carroll Gardens-Columbia Street-Red Hook","population":"38353"}
+,{"nta_code":"BK34","nta_name":"Sunset Park East","population":"72340"}
+,{"nta_code":"BK35","nta_name":"Stuyvesant Heights","population":"63504"}
+,{"nta_code":"BK37","nta_name":"Park Slope-Gowanus","population":"67649"}
+,{"nta_code":"BK38","nta_name":"DUMBO-Vinegar Hill-Downtown Brklyn-Boerum Hill","population":"34495"}
+,{"nta_code":"BK40","nta_name":"Windsor Terrace","population":"20988"}
+,{"nta_code":"BK41","nta_name":"Kensington-Ocean Parkway","population":"36891"}
+,{"nta_code":"BK42","nta_name":"Flatbush","population":"105804"}
+,{"nta_code":"BK43","nta_name":"Midwood","population":"52835"}
+,{"nta_code":"BK44","nta_name":"Madison","population":"38917"}
+,{"nta_code":"BK45","nta_name":"Georgetown-Marine Park-Bergen Beach-Mill Basin","population":"45231"}
+,{"nta_code":"BK46","nta_name":"Ocean Parkway South","population":"20299"}
+,{"nta_code":"BK50","nta_name":"Canarsie","population":"83693"}
+,{"nta_code":"BK58","nta_name":"Flatlands","population":"64762"}
+,{"nta_code":"BK60","nta_name":"Prospect Lefferts Gardens-Wingate","population":"67459"}
+,{"nta_code":"BK61","nta_name":"Crown Heights North","population":"103169"}
+,{"nta_code":"BK63","nta_name":"Crown Heights South","population":"39670"}
+,{"nta_code":"BK64","nta_name":"Prospect Heights","population":"19849"}
+,{"nta_code":"BK68","nta_name":"Fort Greene","population":"26079"}
+,{"nta_code":"BK69","nta_name":"Clinton Hill","population":"34791"}
+,{"nta_code":"BK72","nta_name":"Williamsburg","population":"32926"}
+,{"nta_code":"BK73","nta_name":"North Side-South Side","population":"45774"}
+,{"nta_code":"BK75","nta_name":"Bedford","population":"70713"}
+,{"nta_code":"BK76","nta_name":"Greenpoint","population":"34719"}
+,{"nta_code":"BK77","nta_name":"Bushwick North","population":"57138"}
+,{"nta_code":"BK78","nta_name":"Bushwick South","population":"72101"}
+,{"nta_code":"BK79","nta_name":"Ocean Hill","population":"31935"}
+,{"nta_code":"BK81","nta_name":"Brownsville","population":"58300"}
+,{"nta_code":"BK82","nta_name":"East New York","population":"91958"}
+,{"nta_code":"BK83","nta_name":"Cypress Hills-City Line","population":"49223"}
+,{"nta_code":"BK85","nta_name":"East New York (Pennsylvania Ave)","population":"29343"}
+,{"nta_code":"BK88","nta_name":"Borough Park","population":"106357"}
+,{"nta_code":"BK90","nta_name":"East Williamsburg","population":"34158"}
+,{"nta_code":"BK91","nta_name":"East Flatbush-Farragut","population":"50355"}
+,{"nta_code":"BK93","nta_name":"Starrett City","population":"13354"}
+,{"nta_code":"BK95","nta_name":"Erasmus","population":"29938"}
+,{"nta_code":"BK96","nta_name":"Rugby-Remsen Village","population":"55326"}
+,{"nta_code":"BK99","nta_name":"park-cemetery-etc-Brooklyn","population":"418"}
+,{"nta_code":"MN01","nta_name":"Marble Hill-Inwood","population":"46746"}
+,{"nta_code":"MN03","nta_name":"Central Harlem North-Polo Grounds","population":"75282"}
+,{"nta_code":"MN04","nta_name":"Hamilton Heights","population":"48520"}
+,{"nta_code":"QN61","nta_name":"Jamaica","population":"53751"}
+,{"nta_code":"MN06","nta_name":"Manhattanville","population":"22950"}
+,{"nta_code":"MN09","nta_name":"Morningside Heights","population":"55929"}
+,{"nta_code":"MN11","nta_name":"Central Harlem South","population":"43383"}
+,{"nta_code":"MN12","nta_name":"Upper West Side","population":"132378"}
+,{"nta_code":"MN13","nta_name":"Hudson Yards-Chelsea-Flat Iron-Union Square","population":"70150"}
+,{"nta_code":"MN14","nta_name":"Lincoln Square","population":"61489"}
+,{"nta_code":"MN15","nta_name":"Clinton","population":"45884"}
+,{"nta_code":"MN17","nta_name":"Midtown-Midtown South","population":"28630"}
+,{"nta_code":"MN19","nta_name":"Turtle Bay-East Midtown","population":"51231"}
+,{"nta_code":"MN20","nta_name":"Murray Hill-Kips Bay","population":"50742"}
+,{"nta_code":"MN21","nta_name":"Gramercy","population":"27988"}
+,{"nta_code":"MN22","nta_name":"East Village","population":"44136"}
+,{"nta_code":"MN23","nta_name":"West Village","population":"66880"}
+,{"nta_code":"MN24","nta_name":"SoHo-TriBeCa-Civic Center-Little Italy","population":"42742"}
+,{"nta_code":"MN25","nta_name":"Battery Park City-Lower Manhattan","population":"39699"}
+,{"nta_code":"MN27","nta_name":"Chinatown","population":"47844"}
+,{"nta_code":"MN28","nta_name":"Lower East Side","population":"72957"}
+,{"nta_code":"MN31","nta_name":"Lenox Hill-Roosevelt Island","population":"80771"}
+,{"nta_code":"MN32","nta_name":"Yorkville","population":"77942"}
+,{"nta_code":"MN33","nta_name":"East Harlem South","population":"57902"}
+,{"nta_code":"MN34","nta_name":"East Harlem North","population":"58019"}
+,{"nta_code":"MN35","nta_name":"Washington Heights North","population":"67136"}
+,{"nta_code":"MN36","nta_name":"Washington Heights South","population":"84438"}
+,{"nta_code":"MN40","nta_name":"Upper East Side-Carnegie Hill","population":"61207"}
+,{"nta_code":"MN50","nta_name":"Stuyvesant Town-Cooper Village","population":"21049"}
+,{"nta_code":"MN99","nta_name":"park-cemetery-etc-Manhattan","population":"1849"}
+,{"nta_code":"QN01","nta_name":"South Jamaica","population":"38894"}
+,{"nta_code":"QN02","nta_name":"Springfield Gardens North","population":"25409"}
+,{"nta_code":"QN03","nta_name":"Springfield Gardens South-Brookville","population":"20132"}
+,{"nta_code":"QN05","nta_name":"Rosedale","population":"25063"}
+,{"nta_code":"QN06","nta_name":"Jamaica Estates-Holliswood","population":"25480"}
+,{"nta_code":"QN07","nta_name":"Hollis","population":"20269"}
+,{"nta_code":"QN08","nta_name":"St. Albans","population":"48593"}
+,{"nta_code":"QN10","nta_name":"Breezy Point-Belle Harbor-Rockwy Prk-Broad Chnl","population":"28018"}
+,{"nta_code":"QN12","nta_name":"Hammels-Arverne-Edgemere","population":"36885"}
+,{"nta_code":"QN15","nta_name":"Far Rockaway-Bayswater","population":"50058"}
+,{"nta_code":"QN17","nta_name":"Forest Hills","population":"83728"}
+,{"nta_code":"QN18","nta_name":"Rego Park","population":"28260"}
+,{"nta_code":"QN19","nta_name":"Glendale","population":"32496"}
+,{"nta_code":"QN20","nta_name":"Ridgewood","population":"69317"}
+,{"nta_code":"QN21","nta_name":"Middle Village","population":"37929"}
+,{"nta_code":"QN22","nta_name":"Flushing","population":"72008"}
+,{"nta_code":"QN23","nta_name":"College Point","population":"24275"}
+,{"nta_code":"QN25","nta_name":"Corona","population":"57658"}
+,{"nta_code":"QN26","nta_name":"North Corona","population":"52037"}
+,{"nta_code":"QN27","nta_name":"East Elmhurst","population":"23150"}
+,{"nta_code":"QN28","nta_name":"Jackson Heights","population":"108152"}
+,{"nta_code":"QN29","nta_name":"Elmhurst","population":"88427"}
+,{"nta_code":"QN30","nta_name":"Maspeth","population":"30516"}
+,{"nta_code":"QN31","nta_name":"Hunters Point-Sunnyside-West Maspeth","population":"63271"}
+,{"nta_code":"QN33","nta_name":"Cambria Heights","population":"18677"}
+,{"nta_code":"QN34","nta_name":"Queens Village","population":"52504"}
+,{"nta_code":"QN35","nta_name":"Briarwood-Jamaica Hills","population":"39138"}
+,{"nta_code":"QN37","nta_name":"Kew Gardens Hills","population":"37479"}
+,{"nta_code":"QN38","nta_name":"Pomonok-Flushing Heights-Hillcrest","population":"34034"}
+,{"nta_code":"QN41","nta_name":"Fresh Meadows-Utopia","population":"17812"}
+,{"nta_code":"QN42","nta_name":"Oakland Gardens","population":"28237"}
+,{"nta_code":"QN43","nta_name":"Bellerose","population":"25287"}
+,{"nta_code":"QN44","nta_name":"Glen Oaks-Floral Park-New Hyde Park","population":"22571"}
+,{"nta_code":"QN45","nta_name":"Douglas Manor-Douglaston-Little Neck","population":"24739"}
+,{"nta_code":"QN46","nta_name":"Bayside-Bayside Hills","population":"43808"}
+,{"nta_code":"QN47","nta_name":"Ft. Totten-Bay Terrace-Clearview","population":"21751"}
+,{"nta_code":"QN48","nta_name":"Auburndale","population":"19996"}
+,{"nta_code":"QN49","nta_name":"Whitestone","population":"30773"}
+,{"nta_code":"QN50","nta_name":"Elmhurst-Maspeth","population":"25521"}
+,{"nta_code":"QN51","nta_name":"Murray Hill","population":"51739"}
+,{"nta_code":"QN52","nta_name":"East Flushing","population":"26982"}
+,{"nta_code":"QN53","nta_name":"Woodhaven","population":"56674"}
+,{"nta_code":"QN54","nta_name":"Richmond Hill","population":"62982"}
+,{"nta_code":"QN55","nta_name":"South Ozone Park","population":"75878"}
+,{"nta_code":"QN56","nta_name":"Ozone Park","population":"21376"}
+,{"nta_code":"QN57","nta_name":"Lindenwood-Howard Beach","population":"26148"}
+,{"nta_code":"QN60","nta_name":"Kew Gardens","population":"23278"}
+,{"nta_code":"QN62","nta_name":"Queensboro Hill","population":"20800"}
+,{"nta_code":"QN63","nta_name":"Woodside","population":"45099"}
+,{"nta_code":"QN66","nta_name":"Laurelton","population":"24453"}
+,{"nta_code":"QN68","nta_name":"Queensbridge-Ravenswood-Long Island City","population":"20030"}
+,{"nta_code":"QN70","nta_name":"Astoria","population":"78793"}
+,{"nta_code":"QN71","nta_name":"Old Astoria","population":"27814"}
+,{"nta_code":"QN72","nta_name":"Steinway","population":"47534"}
+,{"nta_code":"QN76","nta_name":"Baisley Park","population":"34603"}
+,{"nta_code":"QN98","nta_name":"Airport","population":"0"}
+,{"nta_code":"QN99","nta_name":"park-cemetery-etc-Queens","population":"436"}
+,{"nta_code":"SI01","nta_name":"Annadale-Huguenot-Prince's Bay-Eltingville","population":"27770"}
+,{"nta_code":"SI05","nta_name":"New Springville-Bloomfield-Travis","population":"39597"}
+,{"nta_code":"SI07","nta_name":"Westerleigh","population":"24102"}
+,{"nta_code":"SI08","nta_name":"Grymes Hill-Clifton-Fox Hills","population":"22460"}
+,{"nta_code":"SI11","nta_name":"Charleston-Richmond Valley-Tottenville","population":"23313"}
+,{"nta_code":"SI12","nta_name":"Mariner's Harbor-Arlington-Port Ivory-Graniteville","population":"31474"}
+,{"nta_code":"SI14","nta_name":"Grasmere-Arrochar-Ft. Wadsworth","population":"16079"}
+,{"nta_code":"SI22","nta_name":"West New Brighton-New Brighton-St. George","population":"33551"}
+,{"nta_code":"SI24","nta_name":"Todt Hill-Emersn Hill-Heartland Villg-Lighthse Hill","population":"30714"}
+,{"nta_code":"SI25","nta_name":"Oakwood-Oakwood Beach","population":"22049"}
+,{"nta_code":"SI28","nta_name":"Port Richmond","population":"20191"}
+,{"nta_code":"SI32","nta_name":"Rossville-Woodrow","population":"20763"}
+,{"nta_code":"SI35","nta_name":"New Brighton-Silver Lake","population":"17525"}
+,{"nta_code":"SI36","nta_name":"Old Town-Dongan Hills-South Beach","population":"24835"}
+,{"nta_code":"SI37","nta_name":"Stapleton-Rosebank","population":"26453"}
+,{"nta_code":"SI45","nta_name":"New Dorp-Midland Beach","population":"21896"}
+,{"nta_code":"SI48","nta_name":"Arden Heights","population":"25238"}
+,{"nta_code":"SI54","nta_name":"Great Kills","population":"40720"}
+,{"nta_code":"SI99","nta_name":"park-cemetery-etc-Staten Island","population":"0"}]

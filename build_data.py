@@ -15,6 +15,7 @@ cuisine_totals = load("cuisine_totals.json")
 boro_cuisine   = load("boro_cuisine.json")
 nta_cuisine    = load("nta_cuisine.json")
 boro_totals_raw= load("boro_totals.json")
+nta_pop_raw    = load("nta_population.json")
 geo            = load("nta2010.min.geojson")
 
 # NTA code -> name from the geojson itself (authoritative match to geometry)
@@ -78,6 +79,64 @@ for r in nta_cuisine:
 boro_totals = {r["boro"]: int(r["n"]) for r in boro_totals_raw if r["boro"] not in ("0", None)}
 total_establishments = sum(int(r["n"]) for r in boro_totals_raw)
 
+# ----- per-neighborhood stats: diversity, dominance, density -----
+import math
+nta_pop = {r["nta_code"]: int(r["population"]) for r in nta_pop_raw if r.get("population")}
+
+# per-NTA cuisine counts (labeled only, i.e. drop blank) + a total incl. blank
+nta_labeled = {}   # code -> {cuisine: n}
+for r in nta_cuisine:
+    code = r.get("nta"); c = r.get("cuisine_description") or ""
+    if code not in nta_name or c == "":
+        continue
+    nta_labeled.setdefault(code, {})[c] = int(r["n"])
+
+nta_stats = {}
+for code, name in nta_name.items():
+    total = nta_total.get(code, 0)
+    if total == 0:
+        continue
+    labeled = nta_labeled.get(code, {})
+    n_lab = sum(labeled.values())
+    n_cuisines = len(labeled)
+    # Simpson diversity over labeled restaurants: P(two random ones differ)
+    simpson = 0.0
+    if n_lab > 1:
+        simpson = 1.0 - sum((v / n_lab) ** 2 for v in labeled.values())
+    # dominance: largest single cuisine as a share of ALL restaurants in the NTA
+    top_cuisine, top_n = (max(labeled.items(), key=lambda kv: kv[1]) if labeled else ("", 0))
+    top_share = top_n / total if total else 0
+    pop = nta_pop.get(code, 0)
+    per1k = (total / pop * 1000) if pop else None
+    nta_stats[code] = {
+        "name": name, "boro": nta_boro.get(code, ""), "total": total,
+        "n_cuisines": n_cuisines, "simpson": round(simpson, 4),
+        "top_cuisine": top_cuisine, "top_share": round(top_share, 4),
+        "pop": pop, "per1k": round(per1k, 1) if per1k is not None else None,
+    }
+
+# non-residential NTAs (parks, cemeteries, airports) have lowercase placeholder
+# names in the 2010 scheme, e.g. "park-cemetery-etc-Manhattan" -- exclude them.
+def is_real(s):
+    nm = s["name"]
+    return bool(nm) and nm[0].isupper() and "Airport" not in nm
+
+def leaderboard(key, reverse=True, where=lambda s: True, n=10):
+    rows = [dict(code=code, **s) for code, s in nta_stats.items() if is_real(s) and where(s)]
+    rows.sort(key=lambda s: (s[key] is None, s[key] if s[key] is not None else 0), reverse=reverse)
+    return rows[:n]
+
+MIN_MIX = 50   # need enough restaurants for "mixed/least-mixed" to mean anything
+MIN_DEN = 20   # and a floor for the density board
+stories = {
+    "most_mixed":   leaderboard("simpson", True,  lambda s: s["total"] >= MIN_MIX),
+    "least_mixed":  leaderboard("top_share", True, lambda s: s["total"] >= MIN_MIX),
+    "densest":      leaderboard("per1k", True,  lambda s: s["total"] >= MIN_DEN and (s["pop"] or 0) >= 500),
+    "most_restaurants": leaderboard("total", True),
+    "most_cuisines":    leaderboard("n_cuisines", True, lambda s: s["total"] >= MIN_DEN),
+    "thresholds": {"min_mix": MIN_MIX, "min_density": MIN_DEN},
+}
+
 bundle = {
     "meta": {
         "source": "NYC DOHMH Restaurant Inspection Results (Socrata 43nn-pn8j)",
@@ -87,6 +146,8 @@ bundle = {
         "n_cuisines": len([c for c in cuisines if c["raw"]]),
     },
     "boro_totals": boro_totals,
+    "nta_stats": nta_stats,
+    "stories": stories,
     "cuisines": cuisines,
     "nta_name": nta_name,
     "nta_boro": nta_boro,

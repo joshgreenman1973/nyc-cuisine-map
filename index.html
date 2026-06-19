@@ -193,6 +193,35 @@
   .fp .tags .tg i{width:9px; height:9px; border-radius:2px}
   .fp .tags .tg b{color:var(--ink); font-weight:600}
 
+  /* neighborhood stories */
+  .answers{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px}
+  .ans{padding:17px 20px; cursor:pointer; transition:transform .15s,box-shadow .15s}
+  .ans:hover{transform:translateY(-2px)}
+  .ans .k{font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--accent);
+    font-weight:700}
+  .ans .nm{font-family:"Fraunces",serif; font-weight:600; font-size:24px; line-height:1.06; margin:9px 0 1px}
+  .ans .boro{font-size:12px; color:var(--ink-soft)}
+  .ans .d{font-size:13px; color:var(--ink); margin-top:7px; line-height:1.35}
+  .boards{display:grid; grid-template-columns:repeat(auto-fit,minmax(330px,1fr)); gap:20px}
+  .board{padding:18px 20px 14px}
+  .board h3{margin:0 0 3px; font-size:18px; font-weight:600}
+  .board .note{font-size:12px; color:var(--ink-soft); margin:0 0 13px; line-height:1.4}
+  .bd{list-style:none; margin:0; padding:0}
+  .bd li{display:grid; grid-template-columns:15px 1fr auto; gap:10px; align-items:center;
+    padding:7px 0; border-bottom:1px solid rgba(36,26,18,.08); cursor:pointer; font-size:13px}
+  .bd li:last-child{border-bottom:none}
+  .bd li:hover .nl{color:var(--accent)}
+  .bd .rk{font-family:"Fraunces",serif; color:var(--gold); font-size:12px}
+  .bd .nm{display:flex; flex-direction:column; gap:5px; min-width:0}
+  .bd .nl{white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .bd .nl em{font-style:normal; color:var(--ink-soft); font-size:11px}
+  .bd .bar{height:5px; background:rgba(36,26,18,.07); border-radius:3px; overflow:hidden}
+  .bd .bar span{display:block; height:100%; border-radius:3px;
+    background:linear-gradient(90deg,var(--accent-2),var(--accent))}
+  .bd .vv{font-family:"Fraunces",serif; font-weight:600; font-variant-numeric:tabular-nums;
+    text-align:right; white-space:nowrap}
+  @media (max-width:680px){ .answers{grid-template-columns:1fr} }
+
   /* footer / modals */
   footer{max-width:1320px; margin:40px auto 0; padding:18px 28px 44px;
     display:flex; gap:12px; align-items:center; flex-wrap:wrap; font-size:12.5px; color:var(--ink-soft)}
@@ -309,6 +338,35 @@
   </div>
 </section>
 
+<section class="dash">
+  <div class="head rv"><h2>Neighborhood stories</h2><span class="ln"></span></div>
+  <p class="sub rv">Past the boroughs are 195 neighborhoods, each with its own character. Click any name to
+    fly there on the map above.</p>
+
+  <div class="answers" id="answers"></div>
+
+  <div class="boards">
+    <div class="board card rv"><h3>Most mixed</h3>
+      <p class="note">Score = the chance that two restaurants picked at random in the area are different
+        cuisines (0&ndash;100). Limited to areas with at least 50 restaurants.</p>
+      <ol class="bd" id="bd_mixed"></ol></div>
+    <div class="board card rv"><h3>Least mixed &mdash; most dominated by one cuisine</h3>
+      <p class="note">The single biggest cuisine as a share of all the area's restaurants. Limited to
+        areas with at least 50 restaurants.</p>
+      <ol class="bd" id="bd_dom"></ol></div>
+    <div class="board card rv"><h3>Most restaurants per resident</h3>
+      <p class="note">Restaurants per 1,000 residents (2010 census population). Commercial cores run far
+        ahead of residential neighborhoods.</p>
+      <ol class="bd" id="bd_density"></ol></div>
+    <div class="board card rv"><h3>Widest range of cuisines</h3>
+      <p class="note">Number of distinct cuisine labels present in the area.</p>
+      <ol class="bd" id="bd_cuisines"></ol></div>
+    <div class="board card rv"><h3>Most restaurants overall</h3>
+      <p class="note">Raw count of establishments, any cuisine.</p>
+      <ol class="bd" id="bd_total"></ol></div>
+  </div>
+</section>
+
 <footer>
   <button class="ai-btn" id="aiBtn">&#9888; AI caution</button>
   <button class="method-btn" id="methodBtn">Methodology &amp; sources</button>
@@ -385,8 +443,14 @@
     <li>Each establishment is assigned to a borough and a 2010 Neighborhood Tabulation Area as recorded in the dataset.</li>
     <li>&ldquo;Share of neighborhood&rdquo; = a cuisine's establishments divided by all establishments in that neighborhood (any cuisine, including blank/unlabeled).</li>
   </ul>
+  <h3>Neighborhood metrics</h3>
+  <ul>
+    <li><strong>Most mixed</strong> uses the Simpson diversity index over a neighborhood's labeled restaurants: 1 &minus; &Sigma;(share of each cuisine)&sup2;, i.e. the probability that two restaurants picked at random are different cuisines. Computed only for areas with at least 50 restaurants.</li>
+    <li><strong>Most dominated</strong> is the single largest cuisine as a share of all the area's restaurants (same 50-restaurant floor).</li>
+    <li><strong>Per resident</strong> divides restaurant count by 2010 census population (the matching geography year); non-residential areas like parks and airports are excluded. Population is from 2010, so this is an approximation.</li>
+  </ul>
   <h3>Geography</h3>
-  <p>2010 Neighborhood Tabulation Areas, New York City Department of City Planning. Boundaries simplified for display.</p>
+  <p>2010 Neighborhood Tabulation Areas, New York City Department of City Planning. Boundaries simplified for display. Population: 2010 U.S. Census via NYC Open Data dataset swpk-hqdp.</p>
   <h3>Known limitations</h3>
   <ul>
     <li>Cuisine is a single coarse, self/inspector-assigned label.</li>
@@ -413,7 +477,7 @@ Promise.all([
   DATA=b; GEO=g;
   buildStrip(); buildSelect(); initMap();
   $("#cuisine").value="Chinese"; render();
-  buildStatCards(); buildTopCuisines(); buildBoroFP();
+  buildStatCards(); buildTopCuisines(); buildBoroFP(); renderStories();
 }).catch(e=>{ $("#maptag").textContent="Could not load data: "+e; });
 
 const cuObj=raw=> DATA.cuisines.find(c=>(c.raw||c.name)===raw) || {name:raw,total:0,origin:false};
@@ -613,6 +677,42 @@ function buildBoroFP(){
       `<div class="mix">${segs}<span style="flex:1;background:rgba(36,26,18,.08)"></span></div>`+
       `<div class="tags">${tags}</div></div>`;
   }).join("");
+}
+
+/* ---------- neighborhood stories ---------- */
+function zoomToNTA(code){
+  layer.eachLayer(l=>{ if(l.feature.properties.NTACode===code){
+    map.fitBounds(l.getBounds(),{maxZoom:13,padding:[40,40]}); l.openTooltip(); }});
+  document.querySelector(".explorer").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function board(elId, rows, valLabel, valNum, sub){
+  const max=Math.max(...rows.map(valNum));
+  $(elId).innerHTML=rows.map((r,i)=>`<li data-code="${r.code}"><span class="rk">${i+1}</span>`+
+    `<span class="nm"><span class="nl">${r.name} <em>${r.boro}${sub?(" &middot; "+sub(r)):""}</em></span>`+
+    `<span class="bar"><span style="width:${Math.max(4,100*valNum(r)/max)}%"></span></span></span>`+
+    `<span class="vv">${valLabel(r)}</span></li>`).join("");
+  $(elId).querySelectorAll("li").forEach(li=>li.addEventListener("click",()=>zoomToNTA(li.dataset.code)));
+}
+function renderStories(){
+  const s=DATA.stories;
+  const mm=s.most_mixed[0], dn=s.densest[0], lm=s.least_mixed[0];
+  const cards=[
+    {k:"Most mixed",nm:mm.name,boro:mm.boro,code:mm.code,
+     d:`${mm.n_cuisines} cuisines &mdash; two random spots are different ${Math.round(mm.simpson*100)}% of the time`},
+    {k:"Most restaurants per resident",nm:dn.name,boro:dn.boro,code:dn.code,
+     d:`${dn.per1k} restaurants per 1,000 residents`},
+    {k:"Most dominated by one cuisine",nm:lm.name,boro:lm.boro,code:lm.code,
+     d:`${Math.round(lm.top_share*100)}% ${lm.top_cuisine}`}
+  ];
+  $("#answers").innerHTML=cards.map(a=>`<div class="ans card" data-code="${a.code}">`+
+    `<div class="k">${a.k}</div><div class="nm">${a.nm}</div>`+
+    `<div class="boro">${a.boro}</div><div class="d">${a.d}</div></div>`).join("");
+  $("#answers").querySelectorAll(".ans").forEach(el=>el.addEventListener("click",()=>zoomToNTA(el.dataset.code)));
+  board("#bd_mixed",   s.most_mixed,      r=>Math.round(r.simpson*100),     r=>r.simpson,    r=>`${r.n_cuisines} cuisines`);
+  board("#bd_dom",     s.least_mixed,     r=>Math.round(r.top_share*100)+"%", r=>r.top_share, r=>r.top_cuisine);
+  board("#bd_density", s.densest,         r=>r.per1k,                       r=>r.per1k,      r=>`${r.total} spots`);
+  board("#bd_cuisines",s.most_cuisines,   r=>r.n_cuisines,                  r=>r.n_cuisines, r=>`${r.total} spots`);
+  board("#bd_total",   s.most_restaurants,r=>r.total.toLocaleString(),      r=>r.total,      null);
 }
 
 document.querySelectorAll("#catfilter button").forEach(b=>b.addEventListener("click",()=>{

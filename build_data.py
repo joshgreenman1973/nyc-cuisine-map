@@ -240,5 +240,31 @@ bundle = {
 with open(os.path.join(D, "bundle.json"), "w") as fh:
     json.dump(bundle, fh, separators=(",", ":"))
 print("wrote bundle.json")
+
+# ----- per-restaurant points (separate file, lazy-loaded by the map on click) -----
+pts_raw = load("camis_points.json")
+def _f(x):
+    try: return float(x)
+    except (TypeError, ValueError): return None
+seen = set(); pt_cuisines = []; cui_idx = {}; by_nta = {}
+for r in pts_raw:
+    cm = r["camis"]
+    if cm in seen:
+        continue
+    la = _f(r.get("latitude")); lo = _f(r.get("longitude"))
+    if la is None or lo is None or not (40.4 < la < 41.0 and -74.3 < lo < -73.6):
+        continue
+    code = r.get("nta")
+    if code not in nta_name:
+        continue
+    seen.add(cm)
+    c = r.get("cuisine_description") or ""
+    if c not in cui_idx:
+        cui_idx[c] = len(pt_cuisines); pt_cuisines.append(c)
+    by_nta.setdefault(code, []).append(
+        [round(la, 5), round(lo, 5), cui_idx[c], (r.get("dba") or "").title()])
+with open(os.path.join(D, "points.json"), "w") as fh:
+    json.dump({"cuisines": pt_cuisines, "byNta": by_nta}, fh, separators=(",", ":"))
+print("wrote points.json:", sum(len(v) for v in by_nta.values()), "points")
 print("cuisines:", len(cuisines), "| NTAs:", len(nta_name))
 print("origin cuisines:", sum(1 for c in cuisines if c["origin"]))

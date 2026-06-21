@@ -102,6 +102,8 @@
   #placeList li:hover{padding-left:7px}
   #placeList .cn{min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
   #placeList .cn.blank{color:var(--ink-soft); font-style:italic}
+  #placeList .psw{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:6px;
+    flex:none}
   #placeList .pp{text-align:right; font-family:"Fraunces",serif; font-weight:600; font-variant-numeric:tabular-nums}
   #placeList .cc{text-align:right; color:var(--ink-soft); font-variant-numeric:tabular-nums; font-size:12px}
   .selsum{border-top:1.5px solid rgba(36,26,18,.14); padding:15px 17px 13px}
@@ -529,6 +531,8 @@ let ntaBreak={}, cityTotalByRaw={}, placeMax=1, scaleMax=1;
 const SIGPAL=["#c0402b","#e08a1e","#caa24a","#6f7d3e","#4f7d8b","#8a5a8f","#b5651d","#2f6b5f","#9c3848","#586ba4","#7d6b3f","#477a5b"];
 const SIGOTHER="#cdbfa6", SIGNONE="#e9e0cf";
 let sigColors={};
+let POINTS=null, pointsPromise=null, placeColors={}, dotLayer=null, dotRenderer=null;
+const DOTOTHER="#b9a888";
 const RAMP=["#f6d287","#eea945","#e2742f","#bf3b2c","#7d1d2d"];
 const NONE="#ece0cb";
 const BORO_ORDER=["Manhattan","Brooklyn","Queens","Bronx","Staten Island"];
@@ -536,7 +540,7 @@ const BORO_ORDER=["Manhattan","Brooklyn","Queens","Bronx","Staten Island"];
 const MIXCOL=["#c0402b","#e08a1e","#caa24a","#7d8b4e","#4f7d8b","#8a5a8f","#b9a888"];
 const $=s=>document.querySelector(s);
 
-const DV="8"; // bump on each data change to bypass stale browser cache
+const DV="9"; // bump on each data change to bypass stale browser cache
 Promise.all([
   fetch("data/bundle.json?v="+DV).then(r=>r.json()),
   fetch("data/nta2010.min.geojson?v="+DV).then(r=>r.json())
@@ -594,6 +598,8 @@ function initMap(){
   layer=L.geoJSON(GEO,{style:styleFor,onEachFeature:onEach}).addTo(map);
   L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png",
     {subdomains:"abcd",opacity:.55,interactive:false}).addTo(map);
+  dotRenderer=L.canvas({padding:.5});
+  dotLayer=L.layerGroup().addTo(map);
 }
 function valueFor(code){
   const m=DATA.nta_by_cuisine[selected]||{}; const n=m[code]||0;
@@ -618,9 +624,11 @@ function colorForCount(v){ return v<=0?NONE:rampColor(Math.log1p(v)/Math.log1p(p
 function styleFor(ft){
   const code=ft.properties.NTACode;
   if(view==="place"){
-    const sel=code===selPlace;
-    return {weight:sel?2.5:.5, color:sel?"#241a12":"#b9a07e",
-      fillColor:colorForCount(DATA.nta_total[code]||0), fillOpacity:sel?.95:.82};
+    const sel=code===selPlace && selPlace!=="CITY";
+    // selected area gets a light wash so the cuisine dots on top stand out
+    if(sel) return {weight:2.5, color:"#241a12", fillColor:"#faf4e9", fillOpacity:.2};
+    return {weight:.5, color:"#b9a07e",
+      fillColor:colorForCount(DATA.nta_total[code]||0), fillOpacity:.78};
   }
   if(view==="signature"){
     const sig=DATA.nta_sig[code];
@@ -654,7 +662,7 @@ function onEach(ft,l){
   l.on("mouseover",()=>{l.setStyle({weight:2,color:"#241a12"});l.bringToFront();l.setTooltipContent(tipHTML(ft.properties.NTACode));});
   l.on("mouseout",()=>layer.resetStyle(l));
   l.on("click",()=>{
-    if(view==="place"){ selPlace=ft.properties.NTACode; $("#place").value=selPlace; renderPlace(); layer.setStyle(styleFor); }
+    if(view==="place") selectPlace(ft.properties.NTACode,true);
     else map.fitBounds(l.getBounds(),{maxZoom:13,padding:[40,40]});
   });
 }
@@ -805,11 +813,7 @@ function buildPlaceSelect(){
       .forEach(code=>{const o=document.createElement("option");o.value=code;o.textContent=DATA.nta_name[code];g.appendChild(o);});
     sel.appendChild(g);
   });
-  sel.addEventListener("change",e=>{
-    selPlace=e.target.value; renderPlace(); layer.setStyle(styleFor);
-    if(selPlace!=="CITY") layer.eachLayer(l=>{ if(l.feature.properties.NTACode===selPlace)
-      map.fitBounds(l.getBounds(),{maxZoom:13,padding:[60,60]}); });
-  });
+  sel.addEventListener("change",e=>selectPlace(e.target.value,true));
 }
 function renderPlace(){
   const isCity=selPlace==="CITY";
@@ -824,6 +828,9 @@ function renderPlace(){
   counts=counts.filter(c=>c.n>0).sort((a,b)=>b.n-a.n);
   const max=counts.length?counts[0].n:1;
   const cityTot=DATA.meta.total_establishments;
+  // colour the top cuisines so the breakdown swatches match the map dots
+  placeColors={};
+  if(!isCity) counts.forEach((c,i)=>{ if(i<SIGPAL.length) placeColors[c.raw]=SIGPAL[i]; });
   const TINT="rgba(224,138,30,.22)";
   const rows=counts.map(c=>{
     const isBlank=c.raw==="";
@@ -832,7 +839,8 @@ function renderPlace(){
     const w=Math.max(1,100*c.n/max);
     const bg=`background:linear-gradient(90deg,${TINT} ${w}%,transparent ${w}%)`;
     const cityCol=isCity?"":`<span class="cc">${cc.toFixed(1)}%</span>`;
-    return `<li class="${isCity?'city':''}" style="${bg}"><span class="cn${isBlank?' blank':''}">${label}</span>`+
+    const sw=isCity?"":`<span class="psw" style="background:${placeColors[c.raw]||DOTOTHER}"></span>`;
+    return `<li class="${isCity?'city':''}" style="${bg}"><span class="cn${isBlank?' blank':''}">${sw}${label}</span>`+
       `<span class="pp">${pp.toFixed(1)}%</span>${cityCol}</li>`;
   }).join("");
   const hd=isCity?`<div class="hd"><span>Cuisine</span><span>Share</span></div>`
@@ -843,6 +851,33 @@ function placeLegend(){
   const mid=Math.round(Math.expm1(0.5*Math.log1p(placeMax)));
   $("#legend").innerHTML=`<div class="lt">Restaurants</div><div class="ramp"></div>`+
     `<div class="ends"><span>1</span><span>${mid}</span><span>${Math.round(placeMax)}</span></div>`;
+}
+function loadPoints(){
+  if(POINTS) return Promise.resolve(POINTS);
+  if(!pointsPromise) pointsPromise=fetch("data/points.json?v="+DV).then(r=>r.json()).then(p=>{POINTS=p;return p;});
+  return pointsPromise;
+}
+function renderDots(){
+  if(!dotLayer) return;
+  dotLayer.clearLayers();
+  if(view!=="place" || selPlace==="CITY" || !POINTS) return;
+  const pts=POINTS.byNta[selPlace]||[];
+  pts.forEach(p=>{
+    const raw=POINTS.cuisines[p[2]];
+    const col=placeColors[raw]||DOTOTHER;
+    L.circleMarker([p[0],p[1]],{renderer:dotRenderer,radius:5,weight:1,
+      color:"#241a12",opacity:.7,fillColor:col,fillOpacity:.95})
+      .bindTooltip(`${p[3]||"(unnamed)"} &mdash; ${cuObj(raw).name}`,{className:"tip",direction:"top"})
+      .addTo(dotLayer);
+  });
+}
+function selectPlace(code, zoom){
+  selPlace=code; $("#place").value=code;
+  renderPlace(); layer.setStyle(styleFor);
+  if(code==="CITY"){ renderDots(); return; }
+  if(zoom) layer.eachLayer(l=>{ if(l.feature.properties.NTACode===code)
+    map.fitBounds(l.getBounds(),{maxZoom:14,padding:[40,40]}); });
+  loadPoints().then(renderDots);
 }
 function setView(v){
   view=v;
@@ -855,9 +890,11 @@ function setView(v){
   $("#placePanel").style.display=v==="place"?"":"none";
   $("#sigPanel").style.display=v==="signature"?"":"none";
   layer.setStyle(styleFor);
+  if(dotLayer) dotLayer.clearLayers();
   if(v==="cuisine"){ render(); }
   else if(v==="place"){ renderPlace(); placeLegend();
-    $("#maptag").innerHTML=`<b>Break down a place</b> &nbsp;&middot;&nbsp; darker = more restaurants; click a neighborhood`; }
+    if(selPlace!=="CITY") loadPoints().then(renderDots);
+    $("#maptag").innerHTML=`<b>Break down a place</b> &nbsp;&middot;&nbsp; click a neighborhood to see every restaurant as a dot`; }
   else { renderSignature(); $("#legend").innerHTML="";
     $("#maptag").innerHTML=`<b>Signature map</b> &nbsp;&middot;&nbsp; each area's most over-represented cuisine`; }
 }

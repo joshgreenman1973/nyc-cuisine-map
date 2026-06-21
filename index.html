@@ -75,6 +75,11 @@
     transition:background .15s,color .15s}
   .seg button.on{background:var(--ink); color:var(--paper-2)}
   .seg button+button{border-left:1.5px solid var(--line)}
+  .seg3 button{font-size:11px; padding:8px 4px; line-height:1.12; white-space:normal}
+  .siglegend{display:flex; flex-direction:column; gap:5px; margin:3px 0 2px}
+  .siglegend .sg{display:flex; align-items:center; gap:8px; font-size:12.5px}
+  .siglegend .sg i{width:13px; height:13px; border-radius:3px; flex:none}
+  .siglegend .sg .ct{margin-left:auto; color:var(--ink-soft); font-variant-numeric:tabular-nums; font-size:11.5px}
   .deflink{display:block; width:100%; margin-top:10px; background:none; border:none;
     padding:2px 0; text-align:left; cursor:pointer; font-family:inherit; font-size:12.5px;
     font-weight:600; color:var(--accent); text-decoration:underline; text-underline-offset:2px;
@@ -292,9 +297,10 @@
 <section class="explorer">
   <aside class="panel card rv d2">
     <div class="pad">
-      <div class="seg" id="vmode">
+      <div class="seg seg3" id="vmode">
         <button data-view="cuisine" class="on">Explore a cuisine</button>
         <button data-view="place">Break down a place</button>
+        <button data-view="signature">Signature map</button>
       </div>
       <div id="cuisineCtl" class="ctl">
         <label class="fld" for="cuisine">Choose a cuisine</label>
@@ -309,6 +315,9 @@
         <label class="fld" for="place">Choose a place</label>
         <div class="selwrap"><select id="place"></select></div>
         <p class="hint">Or click any neighborhood on the map &mdash; percentages are that area's share of all its restaurants, next to the citywide figure.</p>
+      </div>
+      <div id="sigCtl" class="ctl" style="display:none">
+        <p class="hint" style="margin-top:2px">Each neighborhood is coloured by the cuisine it has the most of <b>relative to the city</b> &mdash; its signature. Astoria reads Greek, Brighton Beach Russian, Woodside Filipino. Click any area to zoom.</p>
       </div>
     </div>
 
@@ -326,6 +335,13 @@
       <h3 id="placeTtl"></h3>
       <div class="pmeta" id="placeMeta"></div>
       <ol class="brk" id="placeList"></ol>
+    </div>
+
+    <div class="ranks" id="sigPanel" style="display:none">
+      <h3>Signature cuisines</h3>
+      <div class="siglegend" id="sigLegend"></div>
+      <h3 style="margin-top:15px">Most distinctive neighborhoods</h3>
+      <ol class="bd" id="sigList"></ol>
     </div>
   </aside>
 
@@ -400,6 +416,13 @@
     <div class="board card rv"><h3>Most restaurants overall</h3>
       <p class="note">Raw count of establishments, any cuisine.</p>
       <ol class="bd" id="bd_total"></ol></div>
+    <div class="board card rv"><h3>Most chain-heavy</h3>
+      <p class="note" id="chainNote"></p>
+      <ol class="bd" id="bd_chain"></ol></div>
+    <div class="board card rv"><h3>Most independent</h3>
+      <p class="note">Share of an area's restaurants whose name is <em>not</em> a big chain &mdash;
+        mom-and-pop territory.</p>
+      <ol class="bd" id="bd_indep"></ol></div>
   </div>
 </section>
 
@@ -484,6 +507,8 @@
     <li><strong>Most mixed</strong> uses the Simpson diversity index over a neighborhood's labeled restaurants: 1 &minus; &Sigma;(share of each cuisine)&sup2;, i.e. the probability that two restaurants picked at random are different cuisines. Computed only for areas with at least 50 restaurants.</li>
     <li><strong>Most dominated</strong> is the single largest cuisine as a share of all the area's restaurants (same 50-restaurant floor).</li>
     <li><strong>Per resident</strong> divides restaurant count by 2010 census population (the matching geography year); non-residential areas like parks and airports are excluded. Population is from 2010, so this is an approximation.</li>
+    <li><strong>Signature cuisine</strong> is the cuisine an area over-indexes on most versus the city &mdash; a location quotient: (cuisine's share of the area) &divide; (cuisine's share of the city). Only cuisines with 5+ local spots and a quotient of at least 1.3 qualify; areas with no standout are left blank.</li>
+    <li><strong>Chains</strong> are identified by business name: any name with 5+ locations citywide (after normalising spelling, so &ldquo;DUNKIN&rdquo; and &ldquo;DUNKIN'&rdquo; merge). <em>Caveat:</em> this also catches independent shops that happen to share a generic name &mdash; most notably &ldquo;Kennedy Fried Chicken,&rdquo; which is not a real franchise. So chain shares are slightly overstated in areas with many such shops.</li>
   </ul>
   <h3>Geography</h3>
   <p>2010 Neighborhood Tabulation Areas, New York City Department of City Planning. Boundaries simplified for display. Population: 2010 U.S. Census via NYC Open Data dataset swpk-hqdp.</p>
@@ -501,6 +526,9 @@
 let DATA, GEO, layer, map, selected="Chinese", mode="count";
 let view="cuisine", selPlace="CITY";
 let ntaBreak={}, cityTotalByRaw={}, placeBins=[];
+const SIGPAL=["#c0402b","#e08a1e","#caa24a","#6f7d3e","#4f7d8b","#8a5a8f","#b5651d","#2f6b5f","#9c3848","#586ba4","#7d6b3f","#477a5b"];
+const SIGOTHER="#cdbfa6", SIGNONE="#e9e0cf";
+let sigColors={};
 const RAMP=["#f6d287","#eea945","#e2742f","#bf3b2c","#7d1d2d"];
 const NONE="#ece0cb";
 const BORO_ORDER=["Manhattan","Brooklyn","Queens","Bronx","Staten Island"];
@@ -517,6 +545,7 @@ Promise.all([
   for(const raw in DATA.nta_by_cuisine){ const m=DATA.nta_by_cuisine[raw];
     for(const code in m){ (ntaBreak[code]||(ntaBreak[code]={}))[raw]=m[code]; } }
   DATA.cuisines.forEach(c=>{ cityTotalByRaw[c.raw]=c.total; });
+  (DATA.signature_legend||[]).forEach(([c],i)=>{ if(i<SIGPAL.length) sigColors[c]=SIGPAL[i]; });
   // bins for the "break down a place" map (colour by restaurant count)
   { let v=Object.values(DATA.nta_total).filter(x=>x>0).sort((a,b)=>a-b);
     const q=p=>v[Math.min(v.length-1,Math.floor(p*v.length))];
@@ -592,10 +621,21 @@ function styleFor(ft){
     return {weight:sel?2.5:.5, color:sel?"#241a12":"#b9a07e",
       fillColor:colorForCount(DATA.nta_total[code]||0), fillOpacity:sel?.95:.82};
   }
+  if(view==="signature"){
+    const sig=DATA.nta_sig[code];
+    return {weight:.5,color:"#b9a07e",
+      fillColor: sig?(sigColors[sig.cuisine]||SIGOTHER):SIGNONE, fillOpacity:.85};
+  }
   return {weight:.5,color:"#b9a07e",fillColor:colorFor(valueFor(code)),fillOpacity:.86};
 }
 function tipHTML(code){
   const t=DATA.nta_total[code]||0; const nm=DATA.nta_name[code]||code;
+  if(view==="signature"){
+    const sig=DATA.nta_sig[code];
+    if(!sig) return `<strong>${nm}</strong><br>no standout cuisine`;
+    return `<strong>${nm}</strong><br>signature: <span class="pc">${cuObj(sig.cuisine).name}</span><br>`+
+      `${sig.lq}&times; the citywide rate &middot; ${sig.share}% of its spots`;
+  }
   if(view==="place"){
     const br=ntaBreak[code]||{}; let top="",tn=-1;
     for(const raw in br){ if(raw!=="" && br[raw]>tn){tn=br[raw]; top=cuObj(raw).name;} }
@@ -805,13 +845,27 @@ function setView(v){
   document.querySelectorAll("#vmode button").forEach(x=>x.classList.toggle("on",x.dataset.view===v));
   $("#cuisineCtl").style.display=v==="cuisine"?"":"none";
   $("#placeCtl").style.display=v==="place"?"":"none";
+  $("#sigCtl").style.display=v==="signature"?"":"none";
   $("#selsum").style.display=v==="cuisine"?"":"none";
   $("#ranksWrap").style.display=v==="cuisine"?"":"none";
   $("#placePanel").style.display=v==="place"?"":"none";
+  $("#sigPanel").style.display=v==="signature"?"":"none";
   layer.setStyle(styleFor);
   if(v==="cuisine"){ render(); }
-  else { renderPlace(); placeLegend();
+  else if(v==="place"){ renderPlace(); placeLegend();
     $("#maptag").innerHTML=`<b>Break down a place</b> &nbsp;&middot;&nbsp; darker = more restaurants; click a neighborhood`; }
+  else { renderSignature(); $("#legend").innerHTML="";
+    $("#maptag").innerHTML=`<b>Signature map</b> &nbsp;&middot;&nbsp; each area's most over-represented cuisine`; }
+}
+function renderSignature(){
+  const leg=DATA.signature_legend||[];
+  let html=leg.slice(0,SIGPAL.length).map(([c,n],i)=>
+    `<div class="sg"><i style="background:${SIGPAL[i]}"></i>${cuObj(c).name}<span class="ct">${n}</span></div>`).join("");
+  const others=leg.slice(SIGPAL.length).reduce((a,kv)=>a+kv[1],0);
+  if(others) html+=`<div class="sg"><i style="background:${SIGOTHER}"></i>Other signatures<span class="ct">${others}</span></div>`;
+  html+=`<div class="sg"><i style="background:${SIGNONE}"></i>No standout</div>`;
+  $("#sigLegend").innerHTML=html;
+  board("#sigList", DATA.stories.most_distinctive, r=>r.lq+"&times;", r=>r.lq, r=>cuObj(r.cuisine).name);
 }
 document.querySelectorAll("#vmode button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
 
@@ -849,6 +903,11 @@ function renderStories(){
   board("#bd_density", s.densest,         r=>r.per1k,                       r=>r.per1k,      r=>`${r.total} spots`);
   board("#bd_cuisines",s.most_cuisines,   r=>r.n_cuisines,                  r=>r.n_cuisines, r=>`${r.total} spots`);
   board("#bd_total",   s.most_restaurants,r=>r.total.toLocaleString(),      r=>r.total,      null);
+  board("#bd_chain",   s.most_chain,      r=>r.share+"%",                   r=>r.share,      r=>`${r.chain} of ${r.total}`);
+  board("#bd_indep",   s.most_independent,r=>r.indep+"%",                   r=>r.indep,      r=>`${r.total-r.chain} of ${r.total}`);
+  const tc=DATA.top_chains.slice(0,3).map(c=>`${c.name} (${c.n})`).join(", ");
+  $("#chainNote").innerHTML=`Citywide <b>${DATA.meta.chain_share_city}%</b> of restaurants are chains &mdash; a name with `+
+    `${DATA.meta.chain_threshold}+ locations. Biggest: ${tc}.`;
 }
 
 document.querySelectorAll("#catfilter button").forEach(b=>b.addEventListener("click",()=>{

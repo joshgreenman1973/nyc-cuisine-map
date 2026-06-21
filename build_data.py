@@ -16,6 +16,7 @@ boro_cuisine   = load("boro_cuisine.json")
 nta_cuisine    = load("nta_cuisine.json")
 boro_totals_raw= load("boro_totals.json")
 nta_pop_raw    = load("nta_population.json")
+camis_dba_nta  = load("camis_dba_nta.json")
 geo            = load("nta2010.min.geojson")
 
 # NTA code -> name from the geojson itself (authoritative match to geometry)
@@ -137,6 +138,82 @@ stories = {
     "thresholds": {"min_mix": MIN_MIX, "min_density": MIN_DEN},
 }
 
+# ----- signature cuisine per neighborhood (location quotient) -----
+# LQ = (cuisine's share of the area) / (cuisine's share of the city). The signature
+# is the cuisine the area over-indexes on most -- "what it's known for."
+city_share_by_raw = {(r.get("cuisine_description") or ""): int(r["n"]) / total_establishments
+                     for r in cuisine_totals}
+nta_sig = {}
+sig_freq = {}
+for code, name in nta_name.items():
+    if not name or not name[0].isupper() or "Airport" in name:
+        continue
+    tot = nta_total.get(code, 0)
+    if tot < 30:
+        continue
+    best = None
+    for c, n in nta_labeled.get(code, {}).items():
+        if n < 5:
+            continue
+        cs = city_share_by_raw.get(c, 0)
+        if cs <= 0:
+            continue
+        lq = (n / tot) / cs
+        if best is None or lq > best[1]:
+            best = (c, lq, n)
+    if best and best[1] >= 1.3:
+        c, lq, n = best
+        nta_sig[code] = {"cuisine": c, "name": name, "boro": nta_boro.get(code, ""),
+                         "lq": round(lq, 2), "n": n, "share": round(100 * n / tot, 1)}
+        sig_freq[c] = sig_freq.get(c, 0) + 1
+signature_legend = sorted(sig_freq.items(), key=lambda x: -x[1])
+stories["most_distinctive"] = sorted(
+    (dict(code=code, **s) for code, s in nta_sig.items()),
+    key=lambda s: -s["lq"])[:10]
+
+# ----- chains vs. independents -----
+import re
+def _norm(s):
+    s = (s or "").upper(); s = re.sub(r"[^A-Z0-9 ]", "", s); return re.sub(r"\s+", " ", s).strip()
+estab = {}   # camis -> (normalized name, nta)
+for r in camis_dba_nta:
+    cm = r["camis"]
+    if cm not in estab:
+        estab[cm] = (_norm(r.get("dba")), r.get("nta"))
+namecount = {}
+for nm, _ in estab.values():
+    if nm:
+        namecount[nm] = namecount.get(nm, 0) + 1
+CHAIN_MIN = 5   # a "chain" = a business name with 5+ locations citywide
+chains = {nm for nm, ct in namecount.items() if ct >= CHAIN_MIN}
+n_named = sum(1 for nm, _ in estab.values() if nm)
+n_chain = sum(1 for nm, _ in estab.values() if nm in chains)
+chain_share_city = round(100 * n_chain / n_named, 1)
+nta_chain = {}
+for nm, nta in estab.values():
+    if nta not in nta_name or not nm:
+        continue
+    d = nta_chain.setdefault(nta, {"chain": 0, "total": 0})
+    d["total"] += 1
+    if nm in chains:
+        d["chain"] += 1
+def chain_rows():
+    out = []
+    for code, d in nta_chain.items():
+        nm = nta_name.get(code, "")
+        if not nm or not nm[0].isupper() or d["total"] < 30:
+            continue
+        share = round(100 * d["chain"] / d["total"], 1)
+        out.append({"code": code, "name": nm, "boro": nta_boro.get(code, ""),
+                    "chain": d["chain"], "total": d["total"], "share": share,
+                    "indep": round(100 - share, 1)})
+    return out
+_cr = chain_rows()
+stories["most_chain"] = sorted(_cr, key=lambda r: -r["share"])[:10]
+stories["most_independent"] = sorted(_cr, key=lambda r: r["share"])[:10]
+top_chains = [{"name": nm.title(), "n": ct}
+              for nm, ct in sorted(namecount.items(), key=lambda x: -x[1])[:12]]
+
 bundle = {
     "meta": {
         "source": "NYC DOHMH Restaurant Inspection Results (Socrata 43nn-pn8j)",
@@ -144,9 +221,14 @@ bundle = {
         "unit": "unique establishments (distinct CAMIS)",
         "total_establishments": total_establishments,
         "n_cuisines": len([c for c in cuisines if c["raw"]]),
+        "chain_share_city": chain_share_city,
+        "chain_threshold": CHAIN_MIN,
     },
     "boro_totals": boro_totals,
     "nta_stats": nta_stats,
+    "nta_sig": nta_sig,
+    "signature_legend": signature_legend,
+    "top_chains": top_chains,
     "stories": stories,
     "cuisines": cuisines,
     "nta_name": nta_name,

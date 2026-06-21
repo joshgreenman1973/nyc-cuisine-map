@@ -155,6 +155,9 @@
     font-size:12.5px; padding:7px 10px; box-shadow:var(--shadow); line-height:1.35}
   .leaflet-tooltip.tip strong{font-family:"Fraunces",serif; font-size:14px; color:#fff}
   .leaflet-tooltip.tip .pc{color:var(--accent-2); font-weight:700}
+  .leaflet-tooltip.tip .tbk{margin:5px 0; display:flex; flex-direction:column; gap:2px; min-width:150px}
+  .leaflet-tooltip.tip .trow{display:flex; justify-content:space-between; gap:14px; font-size:12px}
+  .leaflet-tooltip.tip .trow b{color:var(--accent-2); font-variant-numeric:tabular-nums}
 
   /* ---------- dashboard ---------- */
   .dash{max-width:1320px; margin:46px auto 0; padding:0 28px}
@@ -556,6 +559,7 @@ Promise.all([
   buildStrip(); buildSelect(); buildPlaceSelect(); initMap();
   $("#cuisine").value="Chinese"; render();
   buildStatCards(); buildTopCuisines(); buildBoroFP(); renderStories();
+  setView("place"); // open on the whole-city breakdown (all cuisines), not a single one
 }).catch(e=>{ $("#maptag").textContent="Could not load data: "+e; });
 
 const cuObj=raw=> DATA.cuisines.find(c=>(c.raw||c.name)===raw) || {name:raw,total:0,origin:false};
@@ -647,11 +651,12 @@ function tipHTML(code){
       `${sig.lq}&times; the citywide rate &middot; ${sig.share}% of its spots`;
   }
   if(view==="place"){
-    const br=ntaBreak[code]||{}; let top="",tn=-1;
-    for(const raw in br){ if(raw!=="" && br[raw]>tn){tn=br[raw]; top=cuObj(raw).name;} }
-    return `<strong>${nm}</strong><br>${t} restaurants`+
-      (top?`<br><span class="pc">${top}</span> most common`:"")+
-      `<br><span style="opacity:.65">click for full breakdown</span>`;
+    const br=ntaBreak[code]||{};
+    const top=Object.entries(br).filter(e=>e[0]!=="").sort((a,b)=>b[1]-a[1]).slice(0,6);
+    const rows=top.map(([raw,n])=>`<span class="trow"><span>${cuObj(raw).name}</span><b>${(100*n/t).toFixed(0)}%</b></span>`).join("");
+    return `<strong>${nm}</strong> <span style="opacity:.6">&middot; ${t} spots</span>`+
+      (rows?`<div class="tbk">${rows}</div>`:"")+
+      `<span style="opacity:.6;font-size:11px">click to zoom in &amp; see every restaurant</span>`;
   }
   const m=DATA.nta_by_cuisine[selected]||{}; const n=m[code]||0;
   if(mode==="count") return `<strong>${nm}</strong><br>${n} ${n===1?"restaurant":"restaurants"}`;

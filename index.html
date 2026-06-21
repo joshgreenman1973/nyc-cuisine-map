@@ -81,6 +81,24 @@
     text-decoration-color:rgba(192,64,43,.4)}
   .deflink:hover{text-decoration-color:var(--accent)}
 
+  .hint{font-size:11.5px; color:var(--ink-soft); line-height:1.4; margin:9px 0 0}
+  .pmeta{padding:0 17px 4px; font-size:12.5px; color:var(--ink-soft)}
+  .pmeta b{color:var(--ink); font-family:"Fraunces",serif}
+  #placeList{list-style:none; margin:0; padding:0}
+  #placeList .hd{display:grid; grid-template-columns:1fr 46px 46px; gap:8px; font-size:10px;
+    text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); font-weight:700;
+    padding:0 7px 5px; border-bottom:1px solid rgba(36,26,18,.12)}
+  #placeList .hd span:not(:first-child){text-align:right}
+  #placeList li{display:grid; grid-template-columns:1fr 46px 46px; gap:8px; align-items:center;
+    padding:6px 7px; border-bottom:1px solid rgba(36,26,18,.07); font-size:13px; border-radius:4px;
+    cursor:default}
+  #placeList li.city{grid-template-columns:1fr 46px}
+  #placeList li::before{content:none}
+  #placeList li:hover{padding-left:7px}
+  #placeList .cn{min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  #placeList .cn.blank{color:var(--ink-soft); font-style:italic}
+  #placeList .pp{text-align:right; font-family:"Fraunces",serif; font-weight:600; font-variant-numeric:tabular-nums}
+  #placeList .cc{text-align:right; color:var(--ink-soft); font-variant-numeric:tabular-nums; font-size:12px}
   .selsum{border-top:1.5px solid rgba(36,26,18,.14); padding:15px 17px 13px}
   .selsum .big{font-family:"Fraunces",serif; font-size:46px; font-weight:900; line-height:.9}
   .selsum .big .pct{font-size:30px}
@@ -274,22 +292,40 @@
 <section class="explorer">
   <aside class="panel card rv d2">
     <div class="pad">
-      <label class="fld" for="cuisine">Choose a cuisine</label>
-      <div class="selwrap"><select id="cuisine"></select></div>
-      <div class="seg" id="mode">
-        <button data-mode="count" class="on">Number of restaurants</button>
-        <button data-mode="share">Share of neighborhood</button>
+      <div class="seg" id="vmode">
+        <button data-view="cuisine" class="on">Explore a cuisine</button>
+        <button data-view="place">Break down a place</button>
       </div>
-      <button class="deflink" id="defBtn">&#9432;&nbsp; How does the city define a cuisine?</button>
+      <div id="cuisineCtl" class="ctl">
+        <label class="fld" for="cuisine">Choose a cuisine</label>
+        <div class="selwrap"><select id="cuisine"></select></div>
+        <div class="seg" id="mode">
+          <button data-mode="count" class="on">Number of restaurants</button>
+          <button data-mode="share">Share of neighborhood</button>
+        </div>
+        <button class="deflink" id="defBtn">&#9432;&nbsp; How does the city define a cuisine?</button>
+      </div>
+      <div id="placeCtl" class="ctl" style="display:none">
+        <label class="fld" for="place">Choose a place</label>
+        <div class="selwrap"><select id="place"></select></div>
+        <p class="hint">Or click any neighborhood on the map &mdash; percentages are that area's share of all its restaurants, next to the citywide figure.</p>
+      </div>
     </div>
-    <div class="selsum">
+
+    <div class="selsum" id="selsum">
       <div class="big" id="bigNum">&mdash;</div>
       <div class="lab" id="bigLab"></div>
       <div class="boros" id="boros"></div>
     </div>
-    <div class="ranks">
+    <div class="ranks" id="ranksWrap">
       <h3 id="ranksHead">Top neighborhoods</h3>
       <ol id="ranks"></ol>
+    </div>
+
+    <div class="ranks" id="placePanel" style="display:none">
+      <h3 id="placeTtl"></h3>
+      <div class="pmeta" id="placeMeta"></div>
+      <ol class="brk" id="placeList"></ol>
     </div>
   </aside>
 
@@ -463,6 +499,8 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 let DATA, GEO, layer, map, selected="Chinese", mode="count";
+let view="cuisine", selPlace="CITY";
+let ntaBreak={}, cityTotalByRaw={}, placeBins=[];
 const RAMP=["#f6d287","#eea945","#e2742f","#bf3b2c","#7d1d2d"];
 const NONE="#ece0cb";
 const BORO_ORDER=["Manhattan","Brooklyn","Queens","Bronx","Staten Island"];
@@ -475,7 +513,16 @@ Promise.all([
   fetch("data/nta2010.min.geojson").then(r=>r.json())
 ]).then(([b,g])=>{
   DATA=b; GEO=g;
-  buildStrip(); buildSelect(); initMap();
+  // reverse index: neighborhood code -> {cuisine: count}, incl. blank
+  for(const raw in DATA.nta_by_cuisine){ const m=DATA.nta_by_cuisine[raw];
+    for(const code in m){ (ntaBreak[code]||(ntaBreak[code]={}))[raw]=m[code]; } }
+  DATA.cuisines.forEach(c=>{ cityTotalByRaw[c.raw]=c.total; });
+  // bins for the "break down a place" map (colour by restaurant count)
+  { let v=Object.values(DATA.nta_total).filter(x=>x>0).sort((a,b)=>a-b);
+    const q=p=>v[Math.min(v.length-1,Math.floor(p*v.length))];
+    placeBins=[q(.2),q(.4),q(.6),q(.8),v[v.length-1]];
+    for(let i=1;i<placeBins.length;i++) if(placeBins[i]<=placeBins[i-1]) placeBins[i]=placeBins[i-1]+1; }
+  buildStrip(); buildSelect(); buildPlaceSelect(); initMap();
   $("#cuisine").value="Chinese"; render();
   buildStatCards(); buildTopCuisines(); buildBoroFP(); renderStories();
 }).catch(e=>{ $("#maptag").textContent="Could not load data: "+e; });
@@ -537,10 +584,26 @@ function computeBins(){
   for(let i=1;i<bins.length;i++) if(bins[i]<=bins[i-1]) bins[i]=bins[i-1]+(mode==="count"?1:1e-6);
 }
 function colorFor(v){ if(v<=0)return NONE; for(let i=0;i<bins.length;i++) if(v<=bins[i])return RAMP[i]; return RAMP[4]; }
-function styleFor(ft){ return {weight:.5,color:"#b9a07e",fillColor:colorFor(valueFor(ft.properties.NTACode)),fillOpacity:.86}; }
+function colorForCount(v){ if(v<=0)return NONE; for(let i=0;i<placeBins.length;i++) if(v<=placeBins[i])return RAMP[i]; return RAMP[4]; }
+function styleFor(ft){
+  const code=ft.properties.NTACode;
+  if(view==="place"){
+    const sel=code===selPlace;
+    return {weight:sel?2.5:.5, color:sel?"#241a12":"#b9a07e",
+      fillColor:colorForCount(DATA.nta_total[code]||0), fillOpacity:sel?.95:.82};
+  }
+  return {weight:.5,color:"#b9a07e",fillColor:colorFor(valueFor(code)),fillOpacity:.86};
+}
 function tipHTML(code){
-  const m=DATA.nta_by_cuisine[selected]||{}; const n=m[code]||0; const t=DATA.nta_total[code]||0;
-  const nm=DATA.nta_name[code]||code;
+  const t=DATA.nta_total[code]||0; const nm=DATA.nta_name[code]||code;
+  if(view==="place"){
+    const br=ntaBreak[code]||{}; let top="",tn=-1;
+    for(const raw in br){ if(raw!=="" && br[raw]>tn){tn=br[raw]; top=cuObj(raw).name;} }
+    return `<strong>${nm}</strong><br>${t} restaurants`+
+      (top?`<br><span class="pc">${top}</span> most common`:"")+
+      `<br><span style="opacity:.65">click for full breakdown</span>`;
+  }
+  const m=DATA.nta_by_cuisine[selected]||{}; const n=m[code]||0;
   if(mode==="count") return `<strong>${nm}</strong><br>${n} ${n===1?"restaurant":"restaurants"}`;
   const p=t?(100*n/t).toFixed(1):"0";
   return `<strong>${nm}</strong><br><span class="pc">${p}%</span> of its ${t} restaurants <span style="opacity:.7">(${n})</span>`;
@@ -549,7 +612,10 @@ function onEach(ft,l){
   l.bindTooltip("",{sticky:true,className:"tip"});
   l.on("mouseover",()=>{l.setStyle({weight:2,color:"#241a12"});l.bringToFront();l.setTooltipContent(tipHTML(ft.properties.NTACode));});
   l.on("mouseout",()=>layer.resetStyle(l));
-  l.on("click",()=>map.fitBounds(l.getBounds(),{maxZoom:13,padding:[40,40]}));
+  l.on("click",()=>{
+    if(view==="place"){ selPlace=ft.properties.NTACode; $("#place").value=selPlace; renderPlace(); layer.setStyle(styleFor); }
+    else map.fitBounds(l.getBounds(),{maxZoom:13,padding:[40,40]});
+  });
 }
 
 /* ---------- render selected ---------- */
@@ -678,6 +744,76 @@ function buildBoroFP(){
       `<div class="tags">${tags}</div></div>`;
   }).join("");
 }
+
+/* ---------- break down a place ---------- */
+function buildPlaceSelect(){
+  const sel=$("#place");
+  const o0=document.createElement("option"); o0.value="CITY";
+  o0.textContent="Whole city (all neighborhoods)"; sel.appendChild(o0);
+  const byB={};
+  for(const code in DATA.nta_name){
+    if(!DATA.nta_total[code]) continue;
+    const nm=DATA.nta_name[code]; if(!/^[A-Z]/.test(nm)) continue; // skip parks/airports
+    (byB[DATA.nta_boro[code]]||(byB[DATA.nta_boro[code]]=[])).push(code);
+  }
+  BORO_ORDER.forEach(b=>{ if(!byB[b])return;
+    const g=document.createElement("optgroup"); g.label=b;
+    byB[b].sort((x,y)=>DATA.nta_name[x].localeCompare(DATA.nta_name[y]))
+      .forEach(code=>{const o=document.createElement("option");o.value=code;o.textContent=DATA.nta_name[code];g.appendChild(o);});
+    sel.appendChild(g);
+  });
+  sel.addEventListener("change",e=>{
+    selPlace=e.target.value; renderPlace(); layer.setStyle(styleFor);
+    if(selPlace!=="CITY") layer.eachLayer(l=>{ if(l.feature.properties.NTACode===selPlace)
+      map.fitBounds(l.getBounds(),{maxZoom:13,padding:[60,60]}); });
+  });
+}
+function renderPlace(){
+  const isCity=selPlace==="CITY";
+  const total=isCity?DATA.meta.total_establishments:(DATA.nta_total[selPlace]||0);
+  const name=isCity?"New York City":(DATA.nta_name[selPlace]||selPlace);
+  const boro=isCity?"All five boroughs":(DATA.nta_boro[selPlace]||"");
+  $("#placeTtl").textContent=isCity?"New York City — full breakdown":name;
+  $("#placeMeta").innerHTML=`${boro}${boro?" &middot; ":""}<b>${total.toLocaleString()}</b> restaurants`;
+  let counts;
+  if(isCity) counts=DATA.cuisines.map(c=>({raw:c.raw,name:c.name,n:c.total}));
+  else { const br=ntaBreak[selPlace]||{}; counts=Object.keys(br).map(raw=>({raw,name:cuObj(raw).name,n:br[raw]})); }
+  counts=counts.filter(c=>c.n>0).sort((a,b)=>b.n-a.n);
+  const max=counts.length?counts[0].n:1;
+  const cityTot=DATA.meta.total_establishments;
+  const TINT="rgba(224,138,30,.22)";
+  const rows=counts.map(c=>{
+    const isBlank=c.raw==="";
+    const label=isBlank?"Unlabeled":c.name;
+    const pp=100*c.n/total, cc=100*(cityTotalByRaw[c.raw]||0)/cityTot;
+    const w=Math.max(1,100*c.n/max);
+    const bg=`background:linear-gradient(90deg,${TINT} ${w}%,transparent ${w}%)`;
+    const cityCol=isCity?"":`<span class="cc">${cc.toFixed(1)}%</span>`;
+    return `<li class="${isCity?'city':''}" style="${bg}"><span class="cn${isBlank?' blank':''}">${label}</span>`+
+      `<span class="pp">${pp.toFixed(1)}%</span>${cityCol}</li>`;
+  }).join("");
+  const hd=isCity?`<div class="hd"><span>Cuisine</span><span>Share</span></div>`
+                 :`<div class="hd"><span>Cuisine</span><span>Here</span><span>City</span></div>`;
+  $("#placeList").innerHTML=hd+rows;
+}
+function placeLegend(){
+  $("#legend").innerHTML=`<div class="lt">Restaurants</div><div class="ramp"></div>`+
+    `<div class="ends"><span>1</span><span>${Math.round(placeBins[4])}</span></div>`;
+}
+function setView(v){
+  view=v;
+  document.querySelectorAll("#vmode button").forEach(x=>x.classList.toggle("on",x.dataset.view===v));
+  $("#cuisineCtl").style.display=v==="cuisine"?"":"none";
+  $("#placeCtl").style.display=v==="place"?"":"none";
+  $("#selsum").style.display=v==="cuisine"?"":"none";
+  $("#ranksWrap").style.display=v==="cuisine"?"":"none";
+  $("#placePanel").style.display=v==="place"?"":"none";
+  layer.setStyle(styleFor);
+  if(v==="cuisine"){ render(); }
+  else { renderPlace(); placeLegend();
+    $("#maptag").innerHTML=`<b>Break down a place</b> &nbsp;&middot;&nbsp; darker = more restaurants; click a neighborhood`; }
+}
+document.querySelectorAll("#vmode button").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.view)));
 
 /* ---------- neighborhood stories ---------- */
 function zoomToNTA(code){

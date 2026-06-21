@@ -158,6 +158,20 @@
   .leaflet-tooltip.tip .tbk{margin:5px 0; display:flex; flex-direction:column; gap:2px; min-width:150px}
   .leaflet-tooltip.tip .trow{display:flex; justify-content:space-between; gap:14px; font-size:12px}
   .leaflet-tooltip.tip .trow b{color:var(--accent-2); font-variant-numeric:tabular-nums}
+  .dotpop .leaflet-popup-content-wrapper{border-radius:11px; border:1.5px solid var(--line);
+    box-shadow:var(--shadow); background:var(--paper-2)}
+  .dotpop .leaflet-popup-content{margin:12px 14px; font-family:"Hanken Grotesk",sans-serif; color:var(--ink)}
+  .dotpop .leaflet-popup-tip{background:var(--paper-2); border:1.5px solid var(--line)}
+  .dpop .dh{font-family:"Fraunces",serif; font-weight:600; font-size:15.5px; line-height:1.15;
+    display:flex; align-items:center; gap:8px}
+  .dpop .dc{color:var(--accent); font-weight:600; font-size:12.5px; margin-top:2px}
+  .dpop .da{font-size:12.5px; color:var(--ink-soft); margin-top:3px}
+  .dpop .dg{font-size:11.5px; color:var(--ink-soft); margin-top:6px;
+    border-top:1px solid rgba(36,26,18,.12); padding-top:5px}
+  .dpop .dg b{color:var(--ink)}
+  .gr{display:inline-flex; width:19px; height:19px; align-items:center; justify-content:center;
+    border-radius:4px; font-weight:800; font-size:11px; color:#fff; flex:none}
+  .gA{background:#3c7a3c}.gB{background:#c79a2e}.gC{background:#b5402f}
 
   /* ---------- dashboard ---------- */
   .dash{max-width:1320px; margin:46px auto 0; padding:0 28px}
@@ -544,7 +558,7 @@ const BORO_ORDER=["Manhattan","Brooklyn","Queens","Bronx","Staten Island"];
 const MIXCOL=["#c0402b","#e08a1e","#caa24a","#7d8b4e","#4f7d8b","#8a5a8f","#b9a888"];
 const $=s=>document.querySelector(s);
 
-const DV="9"; // bump on each data change to bypass stale browser cache
+const DV="10"; // bump on each data change to bypass stale browser cache
 Promise.all([
   fetch("data/bundle.json?v="+DV).then(r=>r.json()),
   fetch("data/nta2010.min.geojson?v="+DV).then(r=>r.json())
@@ -874,8 +888,23 @@ function renderDots(){
     L.circleMarker([p[0],p[1]],{renderer:dotRenderer,radius:5,weight:1,
       color:"#241a12",opacity:.7,fillColor:col,fillOpacity:.95})
       .bindTooltip(`${p[3]||"(unnamed)"} &mdash; ${cuObj(raw).name}`,{className:"tip",direction:"top"})
+      .bindPopup(dotPopup(p,raw),{className:"dotpop",maxWidth:250,closeButton:true})
       .addTo(dotLayer);
   });
+}
+function dotPopup(p,raw){
+  const name=p[3]||"(unnamed)";
+  const addr=[p[4],p[5]].filter(Boolean).join(", ");
+  const grade=p[7];
+  const badge=grade?`<span class="gr g${grade}">${grade}</span>`:"";
+  const gradeLine=grade
+    ? `<div class="dg">Latest health grade <b>${grade}</b>${p[8]?" &middot; "+p[8]:""}</div>`
+    : `<div class="dg">No current letter grade</div>`;
+  return `<div class="dpop"><div class="dh">${name}${badge}</div>`+
+    `<div class="dc">${cuObj(raw).name}</div>`+
+    (addr?`<div class="da">${addr}</div>`:"")+
+    (p[6]?`<div class="da">${p[6]}</div>`:"")+
+    gradeLine+`</div>`;
 }
 function selectPlace(code, zoom){
   selPlace=code; $("#place").value=code;

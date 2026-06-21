@@ -242,10 +242,20 @@ with open(os.path.join(D, "bundle.json"), "w") as fh:
 print("wrote bundle.json")
 
 # ----- per-restaurant points (separate file, lazy-loaded by the map on click) -----
-pts_raw = load("camis_points.json")
+# Each point: [lat, lng, cuisineIdx, name, address, zip, phone, grade, gradeDate]
+pts_raw = load("camis_full.json")
+grade_raw = load("camis_grades.json")  # already ordered by grade_date DESC
+latest_grade = {}
+for g in grade_raw:
+    cm = g["camis"]
+    if cm not in latest_grade and g.get("grade"):
+        latest_grade[cm] = (g["grade"], (g.get("grade_date") or "")[:10])
 def _f(x):
     try: return float(x)
     except (TypeError, ValueError): return None
+def fmt_phone(p):
+    p = re.sub(r"\D", "", p or "")
+    return "({}) {}-{}".format(p[0:3], p[3:6], p[6:10]) if len(p) == 10 else ""
 seen = set(); pt_cuisines = []; cui_idx = {}; by_nta = {}
 for r in pts_raw:
     cm = r["camis"]
@@ -261,10 +271,14 @@ for r in pts_raw:
     c = r.get("cuisine_description") or ""
     if c not in cui_idx:
         cui_idx[c] = len(pt_cuisines); pt_cuisines.append(c)
-    by_nta.setdefault(code, []).append(
-        [round(la, 5), round(lo, 5), cui_idx[c], (r.get("dba") or "").title()])
+    addr = ((r.get("building") or "") + " " + (r.get("street") or "")).title().strip()
+    g, gd = latest_grade.get(cm, ("", ""))
+    by_nta.setdefault(code, []).append([
+        round(la, 5), round(lo, 5), cui_idx[c], (r.get("dba") or "").title(),
+        addr, r.get("zipcode") or "", fmt_phone(r.get("phone")), g, gd])
 with open(os.path.join(D, "points.json"), "w") as fh:
-    json.dump({"cuisines": pt_cuisines, "byNta": by_nta}, fh, separators=(",", ":"))
+    json.dump({"fields": ["lat","lng","ci","name","addr","zip","phone","grade","gradeDate"],
+               "cuisines": pt_cuisines, "byNta": by_nta}, fh, separators=(",", ":"))
 print("wrote points.json:", sum(len(v) for v in by_nta.values()), "points")
 print("cuisines:", len(cuisines), "| NTAs:", len(nta_name))
 print("origin cuisines:", sum(1 for c in cuisines if c["origin"]))

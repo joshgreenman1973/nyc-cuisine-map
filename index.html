@@ -525,7 +525,7 @@
 <script>
 let DATA, GEO, layer, map, selected="Chinese", mode="count";
 let view="cuisine", selPlace="CITY";
-let ntaBreak={}, cityTotalByRaw={}, placeBins=[];
+let ntaBreak={}, cityTotalByRaw={}, placeMax=1, scaleMax=1;
 const SIGPAL=["#c0402b","#e08a1e","#caa24a","#6f7d3e","#4f7d8b","#8a5a8f","#b5651d","#2f6b5f","#9c3848","#586ba4","#7d6b3f","#477a5b"];
 const SIGOTHER="#cdbfa6", SIGNONE="#e9e0cf";
 let sigColors={};
@@ -536,9 +536,10 @@ const BORO_ORDER=["Manhattan","Brooklyn","Queens","Bronx","Staten Island"];
 const MIXCOL=["#c0402b","#e08a1e","#caa24a","#7d8b4e","#4f7d8b","#8a5a8f","#b9a888"];
 const $=s=>document.querySelector(s);
 
+const DV="8"; // bump on each data change to bypass stale browser cache
 Promise.all([
-  fetch("data/bundle.json").then(r=>r.json()),
-  fetch("data/nta2010.min.geojson").then(r=>r.json())
+  fetch("data/bundle.json?v="+DV).then(r=>r.json()),
+  fetch("data/nta2010.min.geojson?v="+DV).then(r=>r.json())
 ]).then(([b,g])=>{
   DATA=b; GEO=g;
   // reverse index: neighborhood code -> {cuisine: count}, incl. blank
@@ -546,11 +547,7 @@ Promise.all([
     for(const code in m){ (ntaBreak[code]||(ntaBreak[code]={}))[raw]=m[code]; } }
   DATA.cuisines.forEach(c=>{ cityTotalByRaw[c.raw]=c.total; });
   (DATA.signature_legend||[]).forEach(([c],i)=>{ if(i<SIGPAL.length) sigColors[c]=SIGPAL[i]; });
-  // bins for the "break down a place" map (colour by restaurant count)
-  { let v=Object.values(DATA.nta_total).filter(x=>x>0).sort((a,b)=>a-b);
-    const q=p=>v[Math.min(v.length-1,Math.floor(p*v.length))];
-    placeBins=[q(.2),q(.4),q(.6),q(.8),v[v.length-1]];
-    for(let i=1;i<placeBins.length;i++) if(placeBins[i]<=placeBins[i-1]) placeBins[i]=placeBins[i-1]+1; }
+  placeMax=Math.max(1,...Object.values(DATA.nta_total));
   buildStrip(); buildSelect(); buildPlaceSelect(); initMap();
   $("#cuisine").value="Chinese"; render();
   buildStatCards(); buildTopCuisines(); buildBoroFP(); renderStories();
@@ -603,17 +600,21 @@ function valueFor(code){
   if(mode==="count") return n;
   const t=DATA.nta_total[code]||0; return t?n/t:0;
 }
-let bins=[];
-function computeBins(){
-  const m=DATA.nta_by_cuisine[selected]||{};
-  let v=Object.keys(m).map(c=>mode==="count"?m[c]:(DATA.nta_total[c]?m[c]/DATA.nta_total[c]:0)).filter(x=>x>0).sort((a,b)=>a-b);
-  if(!v.length){bins=[];return;}
-  const q=p=>v[Math.min(v.length-1,Math.floor(p*v.length))];
-  bins=[q(.2),q(.4),q(.6),q(.8),v[v.length-1]];
-  for(let i=1;i<bins.length;i++) if(bins[i]<=bins[i-1]) bins[i]=bins[i-1]+(mode==="count"?1:1e-6);
+// continuous colour ramp (interpolated), so 121 reads darker than 17 instead of
+// landing in the same top quantile bin.
+function hexRgb(h){h=h.replace("#","");return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];}
+function lerpHex(a,b,f){const A=hexRgb(a),B=hexRgb(b);return `rgb(${A.map((x,i)=>Math.round(x+(B[i]-x)*f)).join(",")})`;}
+function rampColor(t){t=Math.max(0,Math.min(1,t));const x=t*(RAMP.length-1);const i=Math.floor(x);
+  return i>=RAMP.length-1?RAMP[RAMP.length-1]:lerpHex(RAMP[i],RAMP[i+1],x-i);}
+function computeScale(){
+  const m=DATA.nta_by_cuisine[selected]||{}; let mx=0;
+  for(const code in m){ const v=mode==="count"?m[code]:(DATA.nta_total[code]?m[code]/DATA.nta_total[code]:0); if(v>mx)mx=v; }
+  scaleMax=mx||1;
 }
-function colorFor(v){ if(v<=0)return NONE; for(let i=0;i<bins.length;i++) if(v<=bins[i])return RAMP[i]; return RAMP[4]; }
-function colorForCount(v){ if(v<=0)return NONE; for(let i=0;i<placeBins.length;i++) if(v<=placeBins[i])return RAMP[i]; return RAMP[4]; }
+// counts are heavily skewed -> log scale; shares are gentler -> sqrt
+function tCuisine(v){ if(v<=0)return 0; return mode==="count"?Math.log1p(v)/Math.log1p(scaleMax):Math.sqrt(v/scaleMax); }
+function colorFor(v){ return v<=0?NONE:rampColor(tCuisine(v)); }
+function colorForCount(v){ return v<=0?NONE:rampColor(Math.log1p(v)/Math.log1p(placeMax)); }
 function styleFor(ft){
   const code=ft.properties.NTACode;
   if(view==="place"){
@@ -660,7 +661,7 @@ function onEach(ft,l){
 
 /* ---------- render selected ---------- */
 function render(){
-  computeBins(); layer.setStyle(styleFor);
+  computeScale(); layer.setStyle(styleFor);
   const c=cuObj(selected);
   $("#maptag").innerHTML=`<b>${c.name}</b> &nbsp;&middot;&nbsp; `+
     (mode==="count"?"darker = more restaurants":"darker = larger share of the neighborhood");
@@ -694,10 +695,12 @@ function renderRanks(){
   }));
 }
 function renderLegend(){
-  if(!bins.length){$("#legend").innerHTML="";return;}
-  const lab=v=>mode==="count"?Math.round(v):(100*v).toFixed(0)+"%";
+  if(scaleMax<=0){$("#legend").innerHTML="";return;}
+  const inv=t=>mode==="count"?Math.expm1(t*Math.log1p(scaleMax)):t*t*scaleMax;
+  const lab=v=>mode==="count"?Math.max(1,Math.round(v)):(100*v).toFixed(100*v<10?1:0)+"%";
   $("#legend").innerHTML=`<div class="lt">${mode==="count"?"Restaurants":"Share of neighborhood"}</div>`+
-    `<div class="ramp"></div><div class="ends"><span>${mode==="count"?"1":"0%"}</span><span>${lab(bins[4])}</span></div>`;
+    `<div class="ramp"></div><div class="ends"><span>${mode==="count"?"1":"0"}</span>`+
+    `<span>${lab(inv(0.5))}</span><span>${lab(scaleMax)}</span></div>`;
 }
 
 /* ---------- dashboard ---------- */
@@ -837,8 +840,9 @@ function renderPlace(){
   $("#placeList").innerHTML=hd+rows;
 }
 function placeLegend(){
+  const mid=Math.round(Math.expm1(0.5*Math.log1p(placeMax)));
   $("#legend").innerHTML=`<div class="lt">Restaurants</div><div class="ramp"></div>`+
-    `<div class="ends"><span>1</span><span>${Math.round(placeBins[4])}</span></div>`;
+    `<div class="ends"><span>1</span><span>${mid}</span><span>${Math.round(placeMax)}</span></div>`;
 }
 function setView(v){
   view=v;
@@ -876,6 +880,7 @@ function zoomToNTA(code){
   document.querySelector(".explorer").scrollIntoView({behavior:"smooth",block:"start"});
 }
 function board(elId, rows, valLabel, valNum, sub){
+  if(!rows||!rows.length){ $(elId).innerHTML=""; return; }
   const max=Math.max(...rows.map(valNum));
   $(elId).innerHTML=rows.map((r,i)=>`<li data-code="${r.code}"><span class="rk">${i+1}</span>`+
     `<span class="nm"><span class="nl">${r.name} <em>${r.boro}${sub?(" &middot; "+sub(r)):""}</em></span>`+

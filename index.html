@@ -45,6 +45,10 @@
     line-height:1.04; letter-spacing:-.022em; margin:.32em 0 .42em; color:var(--ink); max-width:19ch}
   .mast p.lede{margin:0; max-width:64ch; font-size:clamp(15px,1.5vw,17.5px);
     color:var(--ink-soft); line-height:1.55}
+  .mast .coverage{margin:14px 0 0; max-width:66ch; font-size:14px; line-height:1.5;
+    color:var(--ink-soft); border-left:2px solid var(--accent); padding-left:13px}
+  .inlink{background:none; border:none; padding:0; font:inherit; color:var(--accent);
+    font-weight:600; cursor:pointer; text-decoration:underline; text-underline-offset:2px}
   .mast .stripstats{display:flex; flex-wrap:wrap; gap:26px; margin-top:20px;
     padding-top:16px; border-top:1px solid rgba(36,26,18,.16)}
   .stripstats .s{display:flex; flex-direction:column}
@@ -313,6 +317,10 @@
   <p class="lede rv d1">Every inspected restaurant in the city carries a single cuisine label. Map them
     across 195 neighborhoods, see what defines each borough, and judge for yourself where the line
     between a &ldquo;cuisine&rdquo; and a &ldquo;food type&rdquo; really falls.</p>
+  <p class="coverage rv d2">What's here: every eating place the city has health-inspected &mdash; about
+    31,000. Because it's inspection data, expect a few quirks: recently-closed spots can still appear,
+    brand-new ones may not be inspected yet, food carts are excluded, and a small share sit in the wrong
+    neighborhood where the city mis-geocoded the address. <button class="inlink" id="covMethod">How the data works &rarr;</button></p>
   <div class="stripstats rv d2" id="stripstats"></div>
 </div>
 
@@ -562,7 +570,7 @@ const BORO_ORDER=["Manhattan","Brooklyn","Queens","Bronx","Staten Island"];
 const MIXCOL=["#c0402b","#e08a1e","#caa24a","#7d8b4e","#4f7d8b","#8a5a8f","#b9a888"];
 const $=s=>document.querySelector(s);
 
-const DV="10"; // bump on each data change to bypass stale browser cache
+const DV="11"; // bump on each data change to bypass stale browser cache
 Promise.all([
   fetch("data/bundle.json?v="+DV).then(r=>r.json()),
   fetch("data/nta2010.min.geojson?v="+DV).then(r=>r.json())
@@ -1022,6 +1030,7 @@ document.querySelectorAll("#catfilter button").forEach(b=>b.addEventListener("cl
 /* modals */
 $("#aiBtn").onclick=()=>$("#aiModal").classList.add("show");
 $("#methodBtn").onclick=()=>$("#methodModal").classList.add("show");
+$("#covMethod").onclick=()=>$("#methodModal").classList.add("show");
 $("#defBtn").onclick=()=>$("#defModal").classList.add("show");
 document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{
   if(e.target===m||e.target.hasAttribute("data-close")) m.classList.remove("show");}));

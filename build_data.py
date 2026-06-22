@@ -256,6 +256,9 @@ def _f(x):
 def fmt_phone(p):
     p = re.sub(r"\D", "", p or "")
     return "({}) {}-{}".format(p[0:3], p[3:6], p[6:10]) if len(p) == 10 else ""
+def titlecase(s):
+    # Title-case that keeps apostrophes lowercase: "WENDY'S" -> "Wendy's", not "Wendy'S"
+    return re.sub(r"[A-Za-z']+", lambda m: m.group(0)[:1].upper() + m.group(0)[1:].lower(), (s or "").strip())
 seen = set(); pt_cuisines = []; cui_idx = {}; by_nta = {}
 for r in pts_raw:
     cm = r["camis"]
@@ -271,10 +274,10 @@ for r in pts_raw:
     c = r.get("cuisine_description") or ""
     if c not in cui_idx:
         cui_idx[c] = len(pt_cuisines); pt_cuisines.append(c)
-    addr = ((r.get("building") or "") + " " + (r.get("street") or "")).title().strip()
+    addr = titlecase((r.get("building") or "") + " " + (r.get("street") or ""))
     g, gd = latest_grade.get(cm, ("", ""))
     by_nta.setdefault(code, []).append([
-        round(la, 5), round(lo, 5), cui_idx[c], (r.get("dba") or "").title(),
+        round(la, 5), round(lo, 5), cui_idx[c], titlecase(r.get("dba")),
         addr, r.get("zipcode") or "", fmt_phone(r.get("phone")), g, gd])
 with open(os.path.join(D, "points.json"), "w") as fh:
     json.dump({"fields": ["lat","lng","ci","name","addr","zip","phone","grade","gradeDate"],

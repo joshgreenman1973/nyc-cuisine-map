@@ -214,7 +214,7 @@
   .bcrow .nm{text-align:right; color:var(--ink); white-space:nowrap; overflow:hidden;
     text-overflow:ellipsis}
   .bcrow .track{height:18px; background:rgba(36,26,18,.06); border-radius:5px; overflow:hidden}
-  .bcrow .fill{height:100%; border-radius:5px; transition:width .6s cubic-bezier(.2,.8,.2,1),filter .15s}
+  .bcrow .fill{display:block; height:100%; border-radius:5px; transition:width .6s cubic-bezier(.2,.8,.2,1),filter .15s}
   .bcrow .fill.origin{background:linear-gradient(90deg,var(--accent-2),var(--accent))}
   .bcrow .fill.type{background:linear-gradient(90deg,#b9a888,#897259)}
   .bcrow .vv{font-family:"Fraunces",serif; font-weight:600; font-variant-numeric:tabular-nums;
@@ -792,7 +792,7 @@ function buildTopCuisines(){
       `<span class="vv">${c.total.toLocaleString()}</span></div>`;
   }).join("");
   $("#topCuisines").querySelectorAll(".bcrow").forEach(row=>row.addEventListener("click",()=>{
-    selected=row.dataset.raw; $("#cuisine").value=selected; render(); syncTopHighlight();
+    selected=row.dataset.raw; $("#cuisine").value=selected; setView("cuisine"); syncTopHighlight();
     document.querySelector(".explorer").scrollIntoView({behavior:"smooth",block:"start"});
   }));
   syncTopHighlight();

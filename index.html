@@ -620,7 +620,10 @@ function initMap(){
   layer=L.geoJSON(GEO,{style:styleFor,onEachFeature:onEach}).addTo(map);
   L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png",
     {subdomains:"abcd",opacity:.55,interactive:false}).addTo(map);
-  dotRenderer=L.canvas({padding:.5});
+  // dots need their own pane ABOVE the choropleth polygons, or the SVG paths
+  // intercept the clicks and the dot popups never open.
+  map.createPane("dots"); map.getPane("dots").style.zIndex=450;
+  dotRenderer=L.canvas({padding:.5,pane:"dots"});
   dotLayer=L.layerGroup().addTo(map);
 }
 function valueFor(code){

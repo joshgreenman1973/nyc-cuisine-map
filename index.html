@@ -99,7 +99,10 @@
     cursor:default}
   #placeList li.city{grid-template-columns:1fr 46px}
   #placeList li::before{content:none}
-  #placeList li:hover{padding-left:7px}
+  #placeList li[data-raw]{cursor:pointer}
+  #placeList li[data-raw]:hover .cn{color:var(--accent)}
+  #placeList li.active{outline:2px solid var(--accent); outline-offset:-2px; border-radius:4px}
+  #placeList li.active .cn{color:var(--accent); font-weight:600}
   #placeList .cn{min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
   #placeList .cn.blank{color:var(--ink-soft); font-style:italic}
   #placeList .psw{display:inline-block; width:9px; height:9px; border-radius:2px; margin-right:6px;
@@ -549,7 +552,7 @@ let ntaBreak={}, cityTotalByRaw={}, placeMax=1, scaleMax=1;
 const SIGPAL=["#c0402b","#e08a1e","#caa24a","#6f7d3e","#4f7d8b","#8a5a8f","#b5651d","#2f6b5f","#9c3848","#586ba4","#7d6b3f","#477a5b"];
 const SIGOTHER="#cdbfa6", SIGNONE="#e9e0cf";
 let sigColors={};
-let POINTS=null, pointsPromise=null, placeColors={}, dotLayer=null, dotRenderer=null;
+let POINTS=null, pointsPromise=null, placeColors={}, dotLayer=null, dotRenderer=null, dotFilter=null;
 const DOTOTHER="#b9a888";
 const RAMP=["#f6d287","#eea945","#e2742f","#bf3b2c","#7d1d2d"];
 const NONE="#ece0cb";
@@ -860,12 +863,16 @@ function renderPlace(){
     const bg=`background:linear-gradient(90deg,${TINT} ${w}%,transparent ${w}%)`;
     const cityCol=isCity?"":`<span class="cc">${cc.toFixed(1)}%</span>`;
     const sw=isCity?"":`<span class="psw" style="background:${placeColors[c.raw]||DOTOTHER}"></span>`;
-    return `<li class="${isCity?'city':''}" style="${bg}"><span class="cn${isBlank?' blank':''}">${sw}${label}</span>`+
+    const dr=isCity?"":` data-raw="${(c.raw||"").replace(/"/g,"&quot;")}"`;
+    const act=(!isCity && c.raw===dotFilter)?" active":"";
+    return `<li class="${isCity?'city':''}${act}"${dr} style="${bg}"><span class="cn${isBlank?' blank':''}">${sw}${label}</span>`+
       `<span class="pp">${pp.toFixed(1)}%</span>${cityCol}</li>`;
   }).join("");
   const hd=isCity?`<div class="hd"><span>Cuisine</span><span>Share</span></div>`
                  :`<div class="hd"><span>Cuisine</span><span>Here</span><span>City</span></div>`;
   $("#placeList").innerHTML=hd+rows;
+  if(!isCity) $("#placeList").querySelectorAll("li[data-raw]").forEach(li=>
+    li.addEventListener("click",()=>toggleDotFilter(li.dataset.raw)));
 }
 function placeLegend(){
   const mid=Math.round(Math.expm1(0.5*Math.log1p(placeMax)));
@@ -881,16 +888,28 @@ function renderDots(){
   if(!dotLayer) return;
   dotLayer.clearLayers();
   if(view!=="place" || selPlace==="CITY" || !POINTS) return;
-  const pts=POINTS.byNta[selPlace]||[];
+  const all=POINTS.byNta[selPlace]||[];
+  const pts=dotFilter?all.filter(p=>POINTS.cuisines[p[2]]===dotFilter):all;
   pts.forEach(p=>{
     const raw=POINTS.cuisines[p[2]];
     const col=placeColors[raw]||DOTOTHER;
-    L.circleMarker([p[0],p[1]],{renderer:dotRenderer,radius:5,weight:1,
+    L.circleMarker([p[0],p[1]],{renderer:dotRenderer,radius:dotFilter?6:5,weight:1,
       color:"#241a12",opacity:.7,fillColor:col,fillOpacity:.95})
       .bindTooltip(`${p[3]||"(unnamed)"} &mdash; ${cuObj(raw).name}`,{className:"tip",direction:"top"})
       .bindPopup(dotPopup(p,raw),{className:"dotpop",maxWidth:250,closeButton:true})
+      .on("click",e=>{ if(e.originalEvent) L.DomEvent.stopPropagation(e.originalEvent); })
       .addTo(dotLayer);
   });
+}
+function toggleDotFilter(raw){
+  if(selPlace==="CITY") return;
+  dotFilter = dotFilter===raw ? null : raw;
+  renderDots();
+  $("#placeList").querySelectorAll("li[data-raw]").forEach(li=>li.classList.toggle("active",li.dataset.raw===dotFilter));
+  const nm=DATA.nta_name[selPlace]||selPlace;
+  $("#maptag").innerHTML = dotFilter
+    ? `Showing only <b>${cuObj(dotFilter).name||"Unlabeled"}</b> in ${nm} &middot; click the row again to reset`
+    : `<b>${nm}</b> &middot; click a cuisine to filter, or a dot for details`;
 }
 function dotPopup(p,raw){
   const name=p[3]||"(unnamed)";
@@ -907,11 +926,15 @@ function dotPopup(p,raw){
     gradeLine+`</div>`;
 }
 function selectPlace(code, zoom){
+  if(code===selPlace) return; // already here; don't rebuild (keeps dot popups open)
+  dotFilter=null;
   selPlace=code; $("#place").value=code;
   renderPlace(); layer.setStyle(styleFor);
   if(code==="CITY"){ renderDots(); return; }
   if(zoom) layer.eachLayer(l=>{ if(l.feature.properties.NTACode===code)
     map.fitBounds(l.getBounds(),{maxZoom:14,padding:[40,40]}); });
+  const nm=DATA.nta_name[code]||code;
+  $("#maptag").innerHTML=`<b>${nm}</b> &middot; click a cuisine to filter, or a dot for details`;
   loadPoints().then(renderDots);
 }
 function setView(v){

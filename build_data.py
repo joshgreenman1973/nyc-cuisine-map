@@ -3,7 +3,7 @@
 Reads raw Socrata aggregations in data/ and writes data/bundle.json.
 All counts are DISTINCT establishments (CAMIS), not inspection rows.
 """
-import json, os
+import datetime, json, os
 
 D = os.path.join(os.path.dirname(__file__), "data")
 
@@ -216,6 +216,10 @@ top_chains = [{"name": nm.title(), "n": ct}
 
 bundle = {
     "meta": {
+        # Dates the data, not the page load, so the footer can't imply the
+        # numbers are fresher than the last pull.
+        "generated_at": datetime.datetime.now(datetime.timezone.utc)
+                                .strftime("%Y-%m-%d"),
         "source": "NYC DOHMH Restaurant Inspection Results (Socrata 43nn-pn8j)",
         "geography": "2010 Neighborhood Tabulation Areas (NYC Dept of City Planning)",
         "unit": "unique establishments (distinct CAMIS)",

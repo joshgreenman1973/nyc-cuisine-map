@@ -1,0 +1,46 @@
+name: Weekly data refresh
+
+# DOHMH republishes inspection results daily, but this map is an inventory of
+# roughly 31,000 establishments — it moves by tens of restaurants a week, so a
+# weekly pull keeps it current without churning the repo every morning.
+on:
+  schedule:
+    - cron: '5 11 * * 1'    # Mondays, 7:05 AM ET
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Pull raw Socrata aggregations
+        run: python3 fetch_data.py
+
+      - name: Rebuild bundle
+        run: python3 build_data.py
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/
+          if git diff --staged --quiet; then
+            echo "No data changes -- skipping commit"
+          else
+            git commit -m "Weekly data refresh: $(date -u +%Y-%m-%d)"
+            pushed=false
+            for attempt in 1 2 3 4 5; do
+              if git push origin main; then pushed=true; break; fi
+              echo "Push rejected (attempt $attempt) — rebasing on latest main…"
+              git pull --rebase --autostash origin main
+            done
+            $pushed || { echo "Push failed after retries"; exit 1; }
+          fi

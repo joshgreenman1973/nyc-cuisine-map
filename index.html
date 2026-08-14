@@ -459,7 +459,7 @@
 <footer>
   <button class="ai-btn" id="aiBtn">&#9888; AI caution</button>
   <button class="method-btn" id="methodBtn">Methodology &amp; sources</button>
-  <span>Source: New York City Department of Health restaurant inspection data &middot; counts are unique establishments (distinct CAMIS)</span>
+  <span>Source: New York City Department of Health restaurant inspection data &middot; counts are unique establishments (distinct CAMIS)<span id="dataDate"></span></span>
 </footer>
 
 <div class="modal" id="defModal"><div class="card">
@@ -586,6 +586,11 @@ Promise.all([
   $("#cuisine").value="Chinese"; render();
   buildStatCards(); buildTopCuisines(); buildBoroFP(); renderStories();
   setView("place"); // open on the whole-city breakdown (all cuisines), not a single one
+  if(DATA.meta && DATA.meta.generated_at){
+    const d=new Date(DATA.meta.generated_at+"T00:00:00Z");
+    $("#dataDate").innerHTML=" &middot; data pulled "+
+      d.toLocaleDateString("en-US",{dateStyle:"medium",timeZone:"UTC"});
+  }
 }).catch(e=>{ $("#maptag").textContent="Could not load data: "+e; });
 
 const cuObj=raw=> DATA.cuisines.find(c=>(c.raw||c.name)===raw) || {name:raw,total:0,origin:false};

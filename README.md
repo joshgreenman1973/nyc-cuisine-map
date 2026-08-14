@@ -65,10 +65,19 @@ grouped by `cuisine_description`, `boro` and `nta`. See `build_data.py`.
 ## Rebuild the data
 
 ```bash
-# raw pulls (cuisine totals, borough x cuisine, neighborhood x cuisine)
-# are saved in data/*.json; regenerate the bundle with:
-python3 build_data.py
+python3 fetch_data.py && python3 build_data.py
 ```
+
+`fetch_data.py` pulls the raw Socrata aggregations into `data/`; `build_data.py`
+turns them into `data/bundle.json` and `data/points.json`, which are what the
+page loads. The three per-establishment pulls are gitignored intermediates —
+they are rebuilt on every run rather than committed.
+
+A GitHub Action (`.github/workflows/refresh-data.yml`) runs both every Monday
+morning and commits the result. `fetch_data.py` exits non-zero on an HTTP
+error, a non-array response, an empty result, or a citywide count that has
+dropped more than 20% against the committed data, so a bad pull fails the job
+instead of publishing a hollowed-out map.
 
 ## Run locally
 

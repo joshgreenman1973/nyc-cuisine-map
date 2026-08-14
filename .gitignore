@@ -1,1 +1,8 @@
 .DS_Store
+
+# Raw per-establishment pulls: ~17MB of intermediates that fetch_data.py
+# regenerates in the same job that builds the bundle. The site serves
+# data/bundle.json and data/points.json, so only those need to be committed.
+data/camis_dba_nta.json
+data/camis_full.json
+data/camis_grades.json

@@ -629,10 +629,10 @@ document.querySelectorAll("#mode button").forEach(b=>b.addEventListener("click",
 /* ---------- map ---------- */
 function initMap(){
   map=L.map("map",{minZoom:10,maxZoom:16,zoomControl:true,scrollWheelZoom:true}).setView([40.705,-73.94],11);
-  L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png",
+  L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png?key=cb1_2r82_1_ae4e70b6166057bc41b89638",
     {subdomains:"abcd",attribution:"&copy; OpenStreetMap &copy; CARTO"}).addTo(map);
   layer=L.geoJSON(GEO,{style:styleFor,onEachFeature:onEach}).addTo(map);
-  L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png",
+  L.tileLayer("https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_only_labels/{z}/{x}/{y}.png?key=cb1_2r82_1_ae4e70b6166057bc41b89638",
     {subdomains:"abcd",opacity:.55,interactive:false}).addTo(map);
   // dots need their own pane ABOVE the choropleth polygons, or the SVG paths
   // intercept the clicks and the dot popups never open.
